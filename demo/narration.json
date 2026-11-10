@@ -1,0 +1,334 @@
+{
+  "cues": "{1} before a phrase shows box 1 of the step from there on, {0,2} boxes 0 and 2, {} none; the pointer goes on the first box named. Cues are not spoken or shown. 'q' is the step's question in the YouTube timecodes (youtubetext.txt).",
+  "youtube": {
+    "en": {
+      "about": "Install Phil's tools is one program that installs, updates and removes all of Phil's Paratext plugins and CMS custom tools. Download it once, tick the tools you want, and click Install. It finds every Paratext 9 on the computer and checks each file before installing it.",
+      "download": "Download Install_Phils_tools.exe from the Paratext Plugins folder:",
+      "link": "https://short.do/HgUb7T",
+      "credits": [
+        "Created with Claude AI.",
+        "Narration: AI-generated voice (Microsoft Azure AI Speech, voice \"Jenny\").",
+        "Music from Free To Use",
+        "Source: https://freetouse.com/music",
+        "Coconut Kind of Love by Aetheric"
+      ]
+    },
+    "es": {
+      "about": "Install Phil's tools es un solo programa que instala, actualiza y quita todos los complementos de Paratext y las herramientas personalizadas (CMS) de Phil. Descárguelo una vez, marque las herramientas que desea y haga clic en Instalar. Encuentra cada Paratext 9 de la computadora y verifica cada archivo antes de instalarlo.",
+      "download": "Descargue Install_Phils_tools.exe de la carpeta Paratext Plugins:",
+      "link": "https://short.do/HgUb7T",
+      "credits": [
+        "Creado con Claude AI.",
+        "Narración: voz generada por IA (Microsoft Azure AI Speech, voz \"Jorge\").",
+        "Music from Free To Use",
+        "Source: https://freetouse.com/music",
+        "Coconut Kind of Love by Aetheric"
+      ]
+    },
+    "fr": {
+      "about": "Install Phil's tools est un seul programme qui installe, met à jour et supprime tous les modules complémentaires de Paratext et les outils personnalisés (CMS) de Phil. Téléchargez-le une fois, cochez les outils voulus et cliquez sur Installer. Il trouve chaque Paratext 9 de l'ordinateur et vérifie chaque fichier avant de l'installer.",
+      "download": "Téléchargez Install_Phils_tools.exe depuis le dossier Paratext Plugins :",
+      "link": "https://short.do/HgUb7T",
+      "credits": [
+        "Créé avec Claude AI.",
+        "Narration : voix générée par IA (Microsoft Azure AI Speech, voix « Rémy »).",
+        "Music from Free To Use",
+        "Source: https://freetouse.com/music",
+        "Coconut Kind of Love by Aetheric"
+      ]
+    }
+  },
+  "steps": [
+    {
+      "id": "title",
+      "en": {
+        "title": "Installing Phil's tools",
+        "text": "One program installs all of Phil's tools for Paratext: the plugins and the CMS custom tools. This video shows how to get it and use it."
+      },
+      "es": {
+        "title": "Instalar las herramientas de Phil",
+        "text": "Un solo programa instala todas las herramientas de Phil para Paratext: los complementos y las herramientas personalizadas CMS. Este video muestra cómo conseguirlo y usarlo."
+      },
+      "fr": {
+        "title": "Installer les outils de Phil",
+        "text": "Un seul programme installe tous les outils de Phil pour Paratext : les modules complémentaires et les outils personnalisés CMS. Cette vidéo montre comment l'obtenir et l'utiliser."
+      }
+    },
+    {
+      "id": "d1_folder",
+      "en": {
+        "title": "Find the installer on Google Drive",
+        "q": "Where do I get the installer?",
+        "text": "{0}Open the Paratext Plugins folder on Google Drive. The link is in the description of this video. {1}Click Install_Phils_tools.exe to select it."
+      },
+      "es": {
+        "title": "Busque el instalador en Google Drive",
+        "q": "¿Dónde consigo el instalador?",
+        "text": "{0}Abra la carpeta Paratext Plugins en Google Drive. El enlace está en la descripción de este video. {1}Haga clic en Install_Phils_tools.exe para seleccionarlo."
+      },
+      "fr": {
+        "title": "Trouvez le programme sur Google Drive",
+        "q": "Où trouver le programme d'installation ?",
+        "text": "{0}Ouvrez le dossier Paratext Plugins sur Google Drive. Le lien est dans la description de cette vidéo. {1}Cliquez sur Install_Phils_tools.exe pour le sélectionner."
+      }
+    },
+    {
+      "id": "d2_download",
+      "en": {
+        "title": "Download it",
+        "q": "How do I download it?",
+        "text": "{0}With the file selected, {1}click the Download button at the top."
+      },
+      "es": {
+        "title": "Descárguelo",
+        "q": "¿Cómo lo descargo?",
+        "text": "{0}Con el archivo seleccionado, {1}haga clic en el botón Descargar, arriba."
+      },
+      "fr": {
+        "title": "Téléchargez-le",
+        "q": "Comment le télécharger ?",
+        "text": "{0}Le fichier étant sélectionné, {1}cliquez sur le bouton Télécharger, en haut."
+      }
+    },
+    {
+      "id": "d3_dangerous",
+      "en": {
+        "title": "Google warns about every program",
+        "q": "Google says the file might be dangerous. What do I do?",
+        "text": "Google Drive warns about every program file. This one is safe. {0}Click Download anyway."
+      },
+      "es": {
+        "title": "Google advierte sobre todo programa",
+        "q": "Google dice que el archivo puede ser peligroso. ¿Qué hago?",
+        "text": "Google Drive advierte sobre cualquier archivo de programa. Este es seguro. {0}Haga clic en Descargar de todos modos."
+      },
+      "fr": {
+        "title": "Google avertit pour tout programme",
+        "q": "Google dit que le fichier peut être dangereux. Que faire ?",
+        "text": "Google Drive avertit pour tout fichier de programme. Celui-ci est sûr. {0}Cliquez sur Télécharger quand même."
+      }
+    },
+    {
+      "id": "d4_save",
+      "en": {
+        "title": "Save it in Downloads",
+        "q": "Where do I save it?",
+        "text": "{0}Save the file in your Downloads folder. {1}Click Save."
+      },
+      "es": {
+        "title": "Guárdelo en Descargas",
+        "q": "¿Dónde lo guardo?",
+        "text": "{0}Guarde el archivo en su carpeta Descargas. {1}Haga clic en Guardar."
+      },
+      "fr": {
+        "title": "Enregistrez-le dans Téléchargements",
+        "q": "Où l'enregistrer ?",
+        "text": "{0}Enregistrez le fichier dans votre dossier Téléchargements. {1}Cliquez sur Enregistrer."
+      }
+    },
+    {
+      "id": "d5_warning",
+      "en": {
+        "title": "Start the installer",
+        "q": "Windows says it protected my PC. What do I do?",
+        "text": "Close Paratext. {0}Then double-click the file in your Downloads folder. Windows may show a warning, because the program is not signed yet. {1}Click More info."
+      },
+      "es": {
+        "title": "Inicie el instalador",
+        "q": "Windows dice que protegió el equipo. ¿Qué hago?",
+        "text": "Cierre Paratext. {0}Luego haga doble clic en el archivo, en su carpeta Descargas. Windows puede mostrar una advertencia, porque el programa todavía no está firmado. {1}Haga clic en Más información."
+      },
+      "fr": {
+        "title": "Lancez le programme d'installation",
+        "q": "Windows dit avoir protégé l'ordinateur. Que faire ?",
+        "text": "Fermez Paratext. {0}Puis double-cliquez sur le fichier, dans votre dossier Téléchargements. Windows peut afficher un avertissement, car le programme n'est pas encore signé. {1}Cliquez sur Informations complémentaires."
+      }
+    },
+    {
+      "id": "d6_runanyway",
+      "en": {
+        "title": "Run it anyway",
+        "text": "{0}Check that the app is Install_Phils_tools.exe. {1}Then click Run anyway."
+      },
+      "es": {
+        "title": "Ejecútelo de todos modos",
+        "text": "{0}Compruebe que la aplicación es Install_Phils_tools.exe. {1}Luego haga clic en Ejecutar de todas formas."
+      },
+      "fr": {
+        "title": "Exécutez-le quand même",
+        "text": "{0}Vérifiez que l'application est bien Install_Phils_tools.exe. {1}Puis cliquez sur Exécuter quand même."
+      }
+    },
+    {
+      "id": "w1_window",
+      "en": {
+        "title": "The installer opens",
+        "q": "What does the installer show?",
+        "text": "The installer opens. {0}Choose your language here. {1}This line shows the Paratext 9 programs it found. {2}There are two tabs: Paratext plugins, and CMS custom tools."
+      },
+      "es": {
+        "title": "Se abre el instalador",
+        "q": "¿Qué muestra el instalador?",
+        "text": "Se abre el instalador. {0}Elija su idioma aquí. {1}Esta línea muestra los programas Paratext 9 que encontró. {2}Hay dos pestañas: Complementos de Paratext y Herramientas personalizadas CMS."
+      },
+      "fr": {
+        "title": "Le programme d'installation s'ouvre",
+        "q": "Que montre le programme d'installation ?",
+        "text": "Le programme d'installation s'ouvre. {0}Choisissez votre langue ici. {1}Cette ligne montre les programmes Paratext 9 trouvés. {2}Il y a deux onglets : Modules complémentaires de Paratext et Outils personnalisés CMS."
+      }
+    },
+    {
+      "id": "w2_status",
+      "en": {
+        "title": "See what is installed",
+        "q": "How do I know what is installed or needs an update?",
+        "text": "{0}The Status column tells you about each tool: not installed, installed, or update available. To update a tool, tick it and click Install / update ticked again."
+      },
+      "es": {
+        "title": "Vea qué está instalado",
+        "q": "¿Cómo sé qué está instalado o necesita actualizarse?",
+        "text": "{0}La columna Estado indica cada herramienta: no instalada, instalada, o actualización disponible. Para actualizar una herramienta, márquela y haga clic de nuevo en Instalar / actualizar los marcados."
+      },
+      "fr": {
+        "title": "Voyez ce qui est installé",
+        "q": "Comment savoir ce qui est installé ou à mettre à jour ?",
+        "text": "{0}La colonne État indique chaque outil : non installé, installé, ou mise à jour disponible. Pour mettre à jour un outil, cochez-le et cliquez de nouveau sur Installer / mettre à jour."
+      }
+    },
+    {
+      "id": "w3_tick",
+      "en": {
+        "title": "Tick the tools you want",
+        "q": "How do I install a plugin?",
+        "text": "{0}Tick the tools you want, for example Bulk Note Editing. {1}The box below describes the selected tool. {2}Then click Install / update ticked."
+      },
+      "es": {
+        "title": "Marque las herramientas que desea",
+        "q": "¿Cómo instalo un complemento?",
+        "text": "{0}Marque las herramientas que desea, por ejemplo Edición de notas en lote. {1}El cuadro de abajo describe la herramienta seleccionada. {2}Luego haga clic en Instalar / actualizar los marcados."
+      },
+      "fr": {
+        "title": "Cochez les outils voulus",
+        "q": "Comment installer un module ?",
+        "text": "{0}Cochez les outils voulus, par exemple Modification de notes en lot. {1}Le cadre du bas décrit l'outil sélectionné. {2}Puis cliquez sur Installer / mettre à jour."
+      }
+    },
+    {
+      "id": "w4_uac",
+      "en": {
+        "title": "Allow the change",
+        "text": "Windows may ask for permission to change Paratext's program folders. Click Yes."
+      },
+      "es": {
+        "title": "Permita el cambio",
+        "text": "Windows puede pedir permiso para cambiar las carpetas del programa Paratext. Haga clic en Sí."
+      },
+      "fr": {
+        "title": "Autorisez la modification",
+        "text": "Windows peut demander l'autorisation de modifier les dossiers du programme Paratext. Cliquez sur Oui."
+      }
+    },
+    {
+      "id": "w5_done",
+      "en": {
+        "title": "The tool is installed",
+        "text": "Windows may ask for permission to change Paratext's program folders. Click Yes. {1}The messages show each step. {0}When it is done, the status says Installed, and the tick is cleared."
+      },
+      "es": {
+        "title": "La herramienta está instalada",
+        "text": "Windows puede pedir permiso para cambiar las carpetas del programa Paratext. Haga clic en Sí. {1}Los mensajes muestran cada paso. {0}Al terminar, el estado dice Instalado y la marca se quita."
+      },
+      "fr": {
+        "title": "L'outil est installé",
+        "text": "Windows peut demander l'autorisation de modifier les dossiers du programme Paratext. Cliquez sur Oui. {1}Les messages montrent chaque étape. {0}À la fin, l'état indique Installé et la case est décochée."
+      }
+    },
+    {
+      "id": "w6_cms",
+      "en": {
+        "title": "CMS custom tools",
+        "q": "How do I install a CMS custom tool?",
+        "text": "The second tab has the CMS custom tools. {0}They go into the cms folder of your Paratext projects folder. {1}Choose English or Spanish for these tools."
+      },
+      "es": {
+        "title": "Herramientas personalizadas CMS",
+        "q": "¿Cómo instalo una herramienta personalizada CMS?",
+        "text": "La segunda pestaña tiene las herramientas personalizadas CMS. {0}Se copian en la carpeta cms de su carpeta de proyectos de Paratext. {1}Elija inglés o español para estas herramientas."
+      },
+      "fr": {
+        "title": "Outils personnalisés CMS",
+        "q": "Comment installer un outil personnalisé CMS ?",
+        "text": "Le deuxième onglet contient les outils personnalisés CMS. {0}Ils vont dans le dossier cms de votre dossier de projets Paratext. {1}Ces outils existent en anglais ou en espagnol : choisissez la langue."
+      }
+    },
+    {
+      "id": "w7_cmsdone",
+      "en": {
+        "title": "Install a CMS tool",
+        "text": "{0}Tick a tool, such as Short Verse 1, and click Install. {1}Its files are copied into the cms folder."
+      },
+      "es": {
+        "title": "Instale una herramienta CMS",
+        "text": "{0}Marque una herramienta, como Versículo 1 corto, y haga clic en Instalar. {1}Sus archivos se copian en la carpeta cms."
+      },
+      "fr": {
+        "title": "Installez un outil CMS",
+        "text": "{0}Cochez un outil, comme Short Verse 1, et cliquez sur Installer. {1}Ses fichiers sont copiés dans le dossier cms."
+      }
+    },
+    {
+      "id": "w8_remove",
+      "en": {
+        "title": "Remove a tool",
+        "q": "How do I remove a tool?",
+        "text": "{0}To remove a tool, tick it {1}and click Remove ticked. {1,2}The installer asks first."
+      },
+      "es": {
+        "title": "Quitar una herramienta",
+        "q": "¿Cómo quito una herramienta?",
+        "text": "{0}Para quitar una herramienta, márquela {1}y haga clic en Quitar los marcados. {1,2}El instalador pregunta antes."
+      },
+      "fr": {
+        "title": "Supprimer un outil",
+        "q": "Comment supprimer un outil ?",
+        "text": "{0}Pour supprimer un outil, cochez-le {1}et cliquez sur Supprimer les cochés. {1,2}Le programme demande d'abord confirmation."
+      }
+    },
+    {
+      "id": "w9_ready",
+      "en": {
+        "title": "Start Paratext",
+        "q": "Where do I find the tools in Paratext?",
+        "text": "Start Paratext again. {1}Each plugin is on the Tools menu {0}of a project's window."
+      },
+      "es": {
+        "title": "Inicie Paratext",
+        "q": "¿Dónde encuentro las herramientas en Paratext?",
+        "text": "Vuelva a iniciar Paratext. {1}Cada complemento está en el menú Herramientas {0}de la ventana de un proyecto."
+      },
+      "fr": {
+        "title": "Démarrez Paratext",
+        "q": "Où trouver les outils dans Paratext ?",
+        "text": "Redémarrez Paratext. {1}Chaque module se trouve dans le menu Outils {0}de la fenêtre d'un projet."
+      }
+    },
+    {
+      "id": "end",
+      "en": {
+        "title": "Install Phil's tools",
+        "sub": "One file · Tick and install · Update or remove anytime",
+        "text": "One file installs them all. Tick the tools you want, click Install, and come back anytime to update or remove them."
+      },
+      "es": {
+        "title": "Install Phil's tools",
+        "sub": "Un solo archivo · Marque e instale · Actualice o quite cuando quiera",
+        "text": "Un solo archivo los instala todos. Marque las herramientas que desea, haga clic en Instalar, y vuelva cuando quiera para actualizarlas o quitarlas."
+      },
+      "fr": {
+        "title": "Install Phil's tools",
+        "sub": "Un seul fichier · Cochez et installez · Mettez à jour ou supprimez à tout moment",
+        "text": "Un seul fichier les installe tous. Cochez les outils voulus, cliquez sur Installer, et revenez quand vous voulez pour les mettre à jour ou les supprimer."
+      }
+    }
+  ]
+}

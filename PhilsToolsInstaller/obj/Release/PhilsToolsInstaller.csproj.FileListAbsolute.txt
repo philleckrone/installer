@@ -1,0 +1,12 @@
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\Install_Phils_tools.exe
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\Install_Phils_tools.pdb
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\mscorlib.dll
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\es\mscorlib.resources.dll
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\normidna.nlp
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\normnfc.nlp
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\normnfd.nlp
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\normnfkc.nlp
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\bin\Release\normnfkd.nlp
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\obj\Release\PhilsToolsInstaller.csprojResolveAssemblyReference.cache
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\obj\Release\Install_Phils_tools.exe
+C:\ClaudeCode Projects\Installer\PhilsToolsInstaller\obj\Release\Install_Phils_tools.pdb

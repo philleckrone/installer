@@ -1,0 +1,22 @@
+﻿Install Phil's tools is one program that installs, updates and removes all of Phil's Paratext plugins and CMS custom tools. Download it once, tick the tools you want, and click Install. It finds every Paratext 9 on the computer and checks each file before installing it.
+
+Download Install_Phils_tools.exe from the Paratext Plugins folder:
+https://short.do/HgUb7T
+
+0:17 Where do I get the installer?
+0:30 How do I download it?
+0:36 Google says the file might be dangerous. What do I do?
+0:45 Where do I save it?
+0:52 Windows says it protected my PC. What do I do?
+1:14 What does the installer show?
+1:29 How do I know what is installed or needs an update?
+1:43 How do I install a plugin?
+2:11 How do I install a CMS custom tool?
+2:33 How do I remove a tool?
+2:41 Where do I find the tools in Paratext?
+
+Created with Claude AI.
+Narration: AI-generated voice (Microsoft Azure AI Speech, voice "Jenny").
+Music from Free To Use
+Source: https://freetouse.com/music
+Coconut Kind of Love by Aetheric
