@@ -1,49 +1,57 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace PhilsTools
 {
-    /// <summary>The installer window: a Plugins tab and a CMS tab, each a ticked list with a status column.</summary>
+    /// <summary>
+    /// The installer window: the Paratext plugins as a ticked list with a status column, sorted by
+    /// name in the window's language. The CMS checks are no longer installed (they come with the Phils
+    /// Custom (cms) Checks plugin); copies an earlier version put in a cms folder can be removed here.
+    /// </summary>
     public class MainForm : Form
     {
+        /// <summary>The plugin that now carries the CMS checks.</summary>
+        const string ChecksPluginKey = "PhilsChecks";
+
         readonly Bundle bundle;
+        readonly string cmsDirOverride;
         List<string> installs = new List<string>();
+        List<KeyValuePair<string, List<CmsItem>>> oldCopies = new List<KeyValuePair<string, List<CmsItem>>>();
         bool busy;
 
         readonly Label lblTitle = new Label();
         readonly Label lblIntro = new Label();
+        readonly Label lblNote = new Label();
         readonly Label lblLang = new Label();
         readonly ComboBox cboLang = new ComboBox();
         readonly Label lblWarning = new Label();
-        readonly TabControl tabs = new TabControl();
-        readonly TabPage tabPlugins = new TabPage();
-        readonly TabPage tabCms = new TabPage();
+        readonly Label lblPlugins = new Label();
         readonly Label lblParatext = new Label();
-        readonly ListView lvPlugins = new ListView();
+        readonly ListView lvPlugins = new ToggleListView();
         readonly TextBox txtPluginInfo = new TextBox();
-        readonly Label lblCmsDir = new Label();
-        readonly ComboBox cboCmsDir = new ComboBox();
-        readonly Button btnBrowse = new Button();
-        readonly Label lblCmsLang = new Label();
-        readonly RadioButton rbEn = new RadioButton();
-        readonly RadioButton rbEs = new RadioButton();
-        readonly ListView lvCms = new ListView();
-        readonly TextBox txtCmsInfo = new TextBox();
+        readonly TableLayoutPanel oldRow = new TableLayoutPanel();
+        readonly Label lblOld = new Label();
+        readonly Button btnOld = new Button();
         readonly Button btnSelectAll = new Button();
         readonly Button btnSelectNone = new Button();
         readonly Button btnInstall = new Button();
         readonly Button btnRemove = new Button();
         readonly Button btnRefresh = new Button();
+        readonly Button btnGuide = new Button();
         readonly Button btnClose = new Button();
         readonly TextBox txtLog = new TextBox();
 
-        public MainForm(Bundle bundle, string cmsDir, string cmsLang, bool cmsTab)
+        /// <param name="cmsDir">For tests: the only cms folder searched for old copies (null = every projects folder's).</param>
+        public MainForm(Bundle bundle, string cmsDir)
         {
             this.bundle = bundle;
+            cmsDirOverride = cmsDir;
             Font = new Font(SystemFonts.MessageBoxFont.FontFamily, SystemFonts.MessageBoxFont.SizeInPoints + 1f);
             AutoScaleMode = AutoScaleMode.Font;
             StartPosition = FormStartPosition.CenterScreen;
@@ -55,36 +63,15 @@ namespace PhilsTools
             cboLang.SelectedIndex = Strings.Lang;
             cboLang.SelectedIndexChanged += delegate { Strings.Lang = cboLang.SelectedIndex; ApplyTexts(); RefreshStatus(); };
 
-            foreach (string folder in ParatextPaths.ProjectsFolders()) cboCmsDir.Items.Add(Path.Combine(folder, "cms"));
-            if (!string.IsNullOrEmpty(cmsDir))
-            {
-                cmsDir = Path.GetFullPath(cmsDir).TrimEnd('\\');
-                if (!cboCmsDir.Items.Contains(cmsDir)) cboCmsDir.Items.Insert(0, cmsDir);
-                cboCmsDir.SelectedItem = cmsDir;
-            }
-            else if (cboCmsDir.Items.Count > 0) cboCmsDir.SelectedIndex = 0;
-            cboCmsDir.SelectedIndexChanged += delegate { RefreshCmsStatus(); };
-
-            string wanted = string.IsNullOrEmpty(cmsLang) ? (Strings.Lang == 1 ? "es" : "en") : cmsLang;
-            if (wanted == "es") rbEs.Checked = true; else rbEn.Checked = true;
-
             foreach (PluginItem p in bundle.Plugins)
             {
                 ListViewItem it = new ListViewItem(new[] { "", p.Version, "" });
                 it.Tag = p;
                 lvPlugins.Items.Add(it);
             }
-            foreach (CmsItem c in bundle.Cms)
-            {
-                ListViewItem it = new ListViewItem(new[] { "", "" });
-                it.Tag = c;
-                lvCms.Items.Add(it);
-            }
             ApplyTexts();
             RefreshStatus();
             if (lvPlugins.Items.Count > 0) lvPlugins.Items[0].Selected = true;
-            if (lvCms.Items.Count > 0) lvCms.Items[0].Selected = true;
-            if (cmsTab) tabs.SelectedTab = tabCms;
         }
 
         // -- Layout -----------------------------------------------------------------------------
@@ -125,10 +112,30 @@ namespace PhilsTools
             head.Controls.Add(cboLang, 2, 0);
             root.Controls.Add(head, 0, 0);
 
+            // A highlighted note at the top (1.4, the user's request): the CMS checks moved to a plugin.
+            TableLayoutPanel top = new TableLayoutPanel();
+            top.Dock = DockStyle.Fill;
+            top.AutoSize = true;
+            top.Margin = new Padding(0);
+            top.ColumnCount = 1;
+            top.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            top.RowCount = 2;
+            top.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            top.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            lblNote.AutoSize = true;
+            lblNote.Dock = DockStyle.Fill;
+            lblNote.BackColor = Color.FromArgb(214, 236, 214);
+            lblNote.ForeColor = Color.FromArgb(0, 80, 0);
+            lblNote.Padding = new Padding(6);
+            lblNote.Margin = new Padding(3, 6, 3, 2);
+            lblNote.Font = new Font(Font, FontStyle.Bold);
+            lblNote.Name = "lblNote";
             lblIntro.AutoSize = true;
             lblIntro.Dock = DockStyle.Fill;
             lblIntro.Margin = new Padding(3, 4, 3, 6);
-            root.Controls.Add(lblIntro, 0, 1);
+            top.Controls.Add(lblNote, 0, 0);
+            top.Controls.Add(lblIntro, 0, 1);
+            root.Controls.Add(top, 0, 1);
 
             lblWarning.AutoSize = true;
             lblWarning.Dock = DockStyle.Fill;
@@ -140,80 +147,56 @@ namespace PhilsTools
             lblWarning.Name = "lblWarning";
             root.Controls.Add(lblWarning, 0, 2);
 
-            tabs.Dock = DockStyle.Fill;
-            tabs.TabPages.Add(tabPlugins);
-            tabs.TabPages.Add(tabCms);
-            root.Controls.Add(tabs, 0, 3);
-
-            // Plugins tab
+            // The plugins
             TableLayoutPanel tp = new TableLayoutPanel();
             tp.Dock = DockStyle.Fill;
+            tp.Margin = new Padding(0);
             tp.ColumnCount = 1;
             tp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            tp.RowCount = 3;
+            tp.RowCount = 5;
+            tp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             tp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             tp.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             tp.RowStyles.Add(new RowStyle(SizeType.Absolute, 92));
+            lblPlugins.AutoSize = true;
+            lblPlugins.Font = new Font(Font, FontStyle.Bold);
+            lblPlugins.Margin = new Padding(3, 2, 3, 0);
             lblParatext.AutoSize = true;
             lblParatext.AutoEllipsis = true;
             lblParatext.Dock = DockStyle.Fill;
-            lblParatext.Margin = new Padding(3, 6, 3, 6);
+            lblParatext.Margin = new Padding(3, 4, 3, 6);
+
+            // Old CMS copies: shown only when some are found.
+            oldRow.Dock = DockStyle.Fill;
+            oldRow.AutoSize = true;
+            oldRow.ColumnCount = 2;
+            oldRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            oldRow.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+            oldRow.BackColor = Color.FromArgb(232, 242, 252);
+            oldRow.Margin = new Padding(3, 0, 3, 6);
+            oldRow.Visible = false;
+            lblOld.AutoSize = true;
+            lblOld.Dock = DockStyle.Fill;
+            lblOld.Padding = new Padding(4);
+            lblOld.Name = "lblOld";
+            btnOld.AutoSize = true;
+            btnOld.Padding = new Padding(6, 2, 6, 2);
+            btnOld.Anchor = AnchorStyles.Right;
+            btnOld.Name = "btnOld";
+            btnOld.Click += delegate { RemoveOldCopies(); };
+            oldRow.Controls.Add(lblOld, 0, 0);
+            oldRow.Controls.Add(btnOld, 1, 0);
+
             SetupList(lvPlugins, "lvPlugins", 3);
             SetupInfo(txtPluginInfo, "txtPluginInfo");
-            tp.Controls.Add(lblParatext, 0, 0);
-            tp.Controls.Add(lvPlugins, 0, 1);
-            tp.Controls.Add(txtPluginInfo, 0, 2);
-            tabPlugins.Controls.Add(tp);
+            tp.Controls.Add(lblPlugins, 0, 0);
+            tp.Controls.Add(lblParatext, 0, 1);
+            tp.Controls.Add(oldRow, 0, 2);
+            tp.Controls.Add(lvPlugins, 0, 3);
+            tp.Controls.Add(txtPluginInfo, 0, 4);
+            root.Controls.Add(tp, 0, 3);
             lvPlugins.SelectedIndexChanged += delegate { ShowPluginInfo(); };
-
-            // CMS tab
-            TableLayoutPanel tc = new TableLayoutPanel();
-            tc.Dock = DockStyle.Fill;
-            tc.ColumnCount = 4;
-            tc.RowCount = 4;
-            tc.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            tc.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            tc.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            tc.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            tc.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            tc.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            tc.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            tc.RowStyles.Add(new RowStyle(SizeType.Absolute, 92));
-            lblCmsDir.AutoSize = true;
-            lblCmsDir.Anchor = AnchorStyles.Left;
-            cboCmsDir.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboCmsDir.Dock = DockStyle.Fill;
-            cboCmsDir.Name = "cboCmsDir";
-            btnBrowse.AutoSize = true;
-            btnBrowse.Name = "btnBrowse";
-            btnBrowse.Click += delegate { BrowseCms(); };
-            tc.Controls.Add(lblCmsDir, 0, 0);
-            tc.Controls.Add(cboCmsDir, 1, 0);
-            tc.SetColumnSpan(cboCmsDir, 2);
-            tc.Controls.Add(btnBrowse, 3, 0);
-            FlowLayoutPanel langRow = new FlowLayoutPanel();
-            langRow.AutoSize = true;
-            langRow.Dock = DockStyle.Fill;
-            langRow.WrapContents = false;
-            lblCmsLang.AutoSize = true;
-            lblCmsLang.Margin = new Padding(3, 6, 10, 3);
-            rbEn.AutoSize = true;
-            rbEn.Name = "rbEn";
-            rbEs.AutoSize = true;
-            rbEs.Name = "rbEs";
-            langRow.Controls.Add(lblCmsLang);
-            langRow.Controls.Add(rbEn);
-            langRow.Controls.Add(rbEs);
-            tc.Controls.Add(langRow, 0, 1);
-            tc.SetColumnSpan(langRow, 4);
-            SetupList(lvCms, "lvCms", 2);
-            SetupInfo(txtCmsInfo, "txtCmsInfo");
-            tc.Controls.Add(lvCms, 0, 2);
-            tc.SetColumnSpan(lvCms, 4);
-            tc.Controls.Add(txtCmsInfo, 0, 3);
-            tc.SetColumnSpan(txtCmsInfo, 4);
-            tabCms.Controls.Add(tc);
-            lvCms.SelectedIndexChanged += delegate { ShowCmsInfo(); };
 
             // Buttons
             TableLayoutPanel bar = new TableLayoutPanel();
@@ -229,7 +212,7 @@ namespace PhilsTools
             right.AutoSize = true;
             right.WrapContents = false;
             right.Anchor = AnchorStyles.Right;
-            foreach (Button b in new[] { btnSelectAll, btnSelectNone, btnRefresh, btnInstall, btnRemove, btnClose })
+            foreach (Button b in new[] { btnSelectAll, btnSelectNone, btnRefresh, btnGuide, btnInstall, btnRemove, btnClose })
             {
                 b.AutoSize = true;
                 b.Padding = new Padding(6, 2, 6, 2);
@@ -237,6 +220,7 @@ namespace PhilsTools
             btnSelectAll.Name = "btnSelectAll";
             btnSelectNone.Name = "btnSelectNone";
             btnRefresh.Name = "btnRefresh";
+            btnGuide.Name = "btnGuide";
             btnInstall.Name = "btnInstall";
             btnRemove.Name = "btnRemove";
             btnClose.Name = "btnClose";
@@ -244,6 +228,7 @@ namespace PhilsTools
             left.Controls.Add(btnSelectAll);
             left.Controls.Add(btnSelectNone);
             left.Controls.Add(btnRefresh);
+            left.Controls.Add(btnGuide);
             right.Controls.Add(btnInstall);
             right.Controls.Add(btnRemove);
             right.Controls.Add(btnClose);
@@ -253,6 +238,7 @@ namespace PhilsTools
             btnSelectAll.Click += delegate { TickAll(true); };
             btnSelectNone.Click += delegate { TickAll(false); };
             btnRefresh.Click += delegate { RefreshStatus(); };
+            btnGuide.Click += delegate { OpenGuide(); };
             btnInstall.Click += delegate { Start(false); };
             btnRemove.Click += delegate { Start(true); };
             btnClose.Click += delegate { Close(); };
@@ -297,75 +283,122 @@ namespace PhilsTools
             Text = Strings.T("Caption") + " " + Strings.ToolVersion;
             lblTitle.Text = Strings.T("Title");
             lblIntro.Text = Strings.T("Intro");
+            lblNote.Text = Strings.T("CmsNote");
             lblLang.Text = Strings.T("Language");
             lblWarning.Text = Strings.T("Running");
-            tabPlugins.Text = Strings.T("TabPlugins");
-            tabCms.Text = Strings.T("TabCms");
-            lblCmsDir.Text = Strings.T("CmsFolder");
-            btnBrowse.Text = Strings.T("Browse");
-            lblCmsLang.Text = Strings.T("CmsLang");
-            rbEn.Text = Strings.T("LangEn");
-            rbEs.Text = Strings.T("LangEs");
+            lblPlugins.Text = Strings.T("TabPlugins");
+            btnOld.Text = Strings.T("OldRemove");
             btnSelectAll.Text = Strings.T("SelectAll");
             btnSelectNone.Text = Strings.T("SelectNone");
             btnRefresh.Text = Strings.T("Refresh");
+            btnGuide.Text = Strings.T("Guide");
             btnInstall.Text = Strings.T("Install");
             btnRemove.Text = Strings.T("Remove");
             btnClose.Text = Strings.T("Close");
             lvPlugins.Columns[0].Text = Strings.T("ColName");
             lvPlugins.Columns[1].Text = Strings.T("ColVersion");
             lvPlugins.Columns[2].Text = Strings.T("ColStatus");
-            lvCms.Columns[0].Text = Strings.T("ColName");
-            lvCms.Columns[1].Text = Strings.T("ColStatus");
             foreach (ListViewItem it in lvPlugins.Items) it.Text = ((PluginItem)it.Tag).Name[Strings.Lang];
-            foreach (ListViewItem it in lvCms.Items) it.Text = ((CmsItem)it.Tag).Name[Strings.Lang];
+            SortPlugins();
             ShowPluginInfo();
-            ShowCmsInfo();
+        }
+
+        /// <summary>Puts the plugins in alphabetical order of their names in the window's language,
+        /// keeping the ticks and the selected row.</summary>
+        void SortPlugins()
+        {
+            CultureInfo culture = new CultureInfo(Strings.Lang == 1 ? "es-ES" : Strings.Lang == 2 ? "fr-FR" : "en-US");
+            StringComparer cmp = StringComparer.Create(culture, true);
+            List<ListViewItem> items = new List<ListViewItem>();
+            HashSet<ListViewItem> ticked = new HashSet<ListViewItem>();
+            foreach (ListViewItem it in lvPlugins.Items)
+            {
+                items.Add(it);
+                if (it.Checked) ticked.Add(it);
+            }
+            ListViewItem selected = lvPlugins.SelectedItems.Count > 0 ? lvPlugins.SelectedItems[0] : null;
+            items.Sort(delegate(ListViewItem a, ListViewItem b) { return cmp.Compare(a.Text, b.Text); });
+            lvPlugins.BeginUpdate();
+            lvPlugins.Items.Clear();
+            lvPlugins.Items.AddRange(items.ToArray());
+            foreach (ListViewItem it in items) it.Checked = ticked.Contains(it);
+            if (selected != null)
+            {
+                selected.Selected = true;
+                selected.EnsureVisible();
+            }
+            lvPlugins.EndUpdate();
         }
 
         void SizeColumns()
         {
             // Widths in pixels, scaled from 96 dpi.
             float k = DeviceDpi / 96f;
-            int ver = (int)(80 * k), st = (int)(230 * k), cst = (int)(290 * k);
+            int ver = (int)(80 * k), st = (int)(230 * k);
             int w = lvPlugins.ClientSize.Width;
             lvPlugins.Columns[1].Width = ver;
             lvPlugins.Columns[2].Width = st;
             lvPlugins.Columns[0].Width = Math.Max(150, w - ver - st - 4);
-            w = lvCms.ClientSize.Width;
-            lvCms.Columns[1].Width = cst;
-            lvCms.Columns[0].Width = Math.Max(150, w - cst - 4);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             lvPlugins.Resize += delegate { SizeColumns(); };
-            lvCms.Resize += delegate { SizeColumns(); };
             SizeColumns();
         }
 
         void ShowPluginInfo()
         {
+            btnGuide.Enabled = !busy && lvPlugins.SelectedItems.Count > 0;
             if (lvPlugins.SelectedItems.Count == 0) { txtPluginInfo.Text = ""; return; }
             PluginItem p = (PluginItem)lvPlugins.SelectedItems[0].Tag;
             txtPluginInfo.Text = p.Description[Strings.Lang] + Environment.NewLine + Strings.F("Menu", p.Menu[Strings.Lang]);
         }
 
-        void ShowCmsInfo()
+        /// <summary>
+        /// Opens the selected plugin's user guide, in the window's language or else in English. The
+        /// guides are not installed: the checked bytes are written to %LOCALAPPDATA%\PhilsTools\guides
+        /// (a per-user folder; an existing copy is reused only when it matches) and opened there.
+        /// </summary>
+        void OpenGuide()
         {
-            if (lvCms.SelectedItems.Count == 0) { txtCmsInfo.Text = ""; return; }
-            CmsItem c = (CmsItem)lvCms.SelectedItems[0].Tag;
-            string text = c.Description[Strings.Lang];
-            List<string> needs = new List<string>();
-            foreach (string n in c.Needs)
+            if (lvPlugins.SelectedItems.Count == 0) return;
+            PluginItem p = (PluginItem)lvPlugins.SelectedItems[0].Tag;
+            BundleFile f = p.GuideFor(Strings.Lang == 1 ? "es" : Strings.Lang == 2 ? "fr" : "en");
+            if (f == null) return;
+            try
             {
-                CmsItem dep = bundle.FindCms(n);
-                if (dep != null) needs.Add(dep.Name[Strings.Lang]);
+                string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PhilsTools", "guides");
+                Directory.CreateDirectory(dir);
+                string path = Path.Combine(dir, f.Target);
+                if (!File.Exists(path) || ParatextPaths.FileSha(path) != f.Sha)
+                {
+                    byte[] data = bundle.Read(f);
+                    if (File.Exists(path))
+                    {
+                        File.SetAttributes(path, FileAttributes.Normal);
+                        File.Delete(path);
+                    }
+                    using (FileStream fs = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                        fs.Write(data, 0, data.Length);
+                }
+                Log("guide: " + path);
+                // Our own viewer (1.6): Windows 11 24H2+ has no WordPad, so without Word an .rtf may
+                // not open at all. Tests set PHILSTOOLS_NOOPEN to only log the path.
+                if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PHILSTOOLS_NOOPEN")))
+                {
+                    var texts = new PhilsShared.RtfViewer.Texts();
+                    texts.OpenElsewhere = Strings.T("OpenElsewhere");
+                    texts.Close = Strings.T("Close");
+                    texts.CannotOpenElsewhere = Strings.T("CannotOpenElsewhere");
+                    PhilsShared.RtfViewer.Open(this, path, p.Name[Strings.Lang] + " - " + Strings.T("Guide"), texts);
+                }
             }
-            if (needs.Count > 0) text += Environment.NewLine + Strings.F("AlsoInstalls", string.Join(", ", needs.ToArray()));
-            if (c.Languages.Count == 1) text += Environment.NewLine + Strings.F("OnlyIn", Strings.LangName(c.Languages[0]));
-            txtCmsInfo.Text = text;
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, Strings.F("GuideError", ex.Message), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         // -- Status ------------------------------------------------------------------------
@@ -406,54 +439,83 @@ namespace PhilsTools
                 it.SubItems[2].Text = StatusText(st);
                 it.SubItems[2].ForeColor = StatusColor(st);
             }
-            RefreshCmsStatus();
+            RefreshOldCopies();
         }
 
-        string CmsDir
-        {
-            get { return cboCmsDir.SelectedItem as string; }
-        }
+        // -- Old CMS copies -------------------------------------------------------------------
 
-        void RefreshCmsStatus()
+        int OldCount
         {
-            string dir = CmsDir;
-            CmsInstaller cms = (dir != null && Directory.Exists(dir)) ? new CmsInstaller(bundle, dir) : null;
-            foreach (ListViewItem it in lvCms.Items)
+            get
             {
-                CmsItem c = (CmsItem)it.Tag;
-                List<string> langs = new List<string>();
-                ToolStatus st = cms == null ? ToolStatus.NotInstalled : cms.Status(c, out langs);
-                string text = StatusText(st);
-                if (langs.Count > 0)
+                int n = 0;
+                foreach (KeyValuePair<string, List<CmsItem>> kv in oldCopies) n += kv.Value.Count;
+                return n;
+            }
+        }
+
+        string OldFolders
+        {
+            get
+            {
+                List<string> dirs = new List<string>();
+                foreach (KeyValuePair<string, List<CmsItem>> kv in oldCopies) dirs.Add(kv.Key);
+                return string.Join("; ", dirs.ToArray());
+            }
+        }
+
+        void RefreshOldCopies()
+        {
+            oldCopies = CmsInstaller.FindOldCopies(bundle, cmsDirOverride);
+            oldRow.Visible = OldCount > 0;
+            lblOld.Text = OldCount > 0 ? Strings.F("OldCopies", OldCount, OldFolders) : "";
+        }
+
+        /// <summary>Asks, then removes the old copies (files changed by hand are kept as .bak).</summary>
+        void RemoveOldCopies()
+        {
+            RefreshOldCopies();
+            if (OldCount == 0) return;
+            List<string> dirs = new List<string>();
+            foreach (KeyValuePair<string, List<CmsItem>> kv in oldCopies) dirs.Add(kv.Key);
+            if (MessageBox.Show(this, Strings.F("OldConfirm", OldCount, string.Join(Environment.NewLine, dirs.ToArray())), Text,
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+
+            List<KeyValuePair<string, List<CmsItem>>> work = oldCopies;
+            txtLog.Clear();
+            SetBusy(true);
+            Thread t = new Thread(delegate()
+            {
+                int problems = 0;
+                foreach (KeyValuePair<string, List<CmsItem>> kv in work)
                 {
-                    List<string> names = new List<string>();
-                    foreach (string l in langs) names.Add(Strings.LangName(l));
-                    text += " (" + string.Join(", ", names.ToArray()) + ")";
+                    try
+                    {
+                        Log(Strings.F("OldRemoving", kv.Key));
+                        problems += new CmsInstaller(bundle, kv.Key).Remove(kv.Value, Log);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(ex.Message);
+                        problems++;
+                    }
+                    Log("");
                 }
-                it.UseItemStyleForSubItems = false;
-                it.SubItems[1].Text = text;
-                it.SubItems[1].ForeColor = StatusColor(st);
-            }
-        }
-
-        void BrowseCms()
-        {
-            using (FolderBrowserDialog dlg = new FolderBrowserDialog())
-            {
-                dlg.Description = Strings.T("BrowseTitle");
-                dlg.ShowNewFolderButton = false;
-                if (CmsDir != null && Directory.Exists(CmsDir)) dlg.SelectedPath = CmsDir;
-                if (dlg.ShowDialog(this) != DialogResult.OK) return;
-                string dir = dlg.SelectedPath.TrimEnd('\\');
-                if (!cboCmsDir.Items.Contains(dir)) cboCmsDir.Items.Add(dir);
-                cboCmsDir.SelectedItem = dir;
-            }
+                Log(problems == 0 ? Strings.T("Done") : Strings.F("DoneErrors", problems));
+                Log(Strings.T("RestartNote"));
+                BeginInvoke(new Action(delegate
+                {
+                    SetBusy(false);
+                    RefreshStatus();
+                }));
+            });
+            t.IsBackground = true;
+            t.Start();
         }
 
         void TickAll(bool on)
         {
-            ListView lv = tabs.SelectedTab == tabCms ? lvCms : lvPlugins;
-            foreach (ListViewItem it in lv.Items) it.Checked = on;
+            foreach (ListViewItem it in lvPlugins.Items) it.Checked = on;
         }
 
         // -- Install / remove ---------------------------------------------------------------
@@ -467,7 +529,7 @@ namespace PhilsTools
         void SetBusy(bool on)
         {
             busy = on;
-            foreach (Control c in new Control[] { tabs, btnSelectAll, btnSelectNone, btnRefresh, btnInstall, btnRemove, btnClose, cboLang })
+            foreach (Control c in new Control[] { lvPlugins, btnOld, btnSelectAll, btnSelectNone, btnRefresh, btnGuide, btnInstall, btnRemove, btnClose, cboLang })
                 c.Enabled = !on;
             UseWaitCursor = on;
         }
@@ -480,48 +542,25 @@ namespace PhilsTools
 
         void Start(bool remove)
         {
-            // Only the tab that is showing: ticks left on the other tab are never acted on.
-            bool onCms = tabs.SelectedTab == tabCms;
-            ListView lv = onCms ? lvCms : lvPlugins;
             List<PluginItem> plugins = new List<PluginItem>();
-            List<CmsItem> cmsItems = new List<CmsItem>();
             List<ListViewItem> handled = new List<ListViewItem>();
-            foreach (ListViewItem it in lv.Items)
+            foreach (ListViewItem it in lvPlugins.Items)
             {
                 if (!it.Checked) continue;
                 handled.Add(it);
-                if (onCms) cmsItems.Add((CmsItem)it.Tag); else plugins.Add((PluginItem)it.Tag);
+                plugins.Add((PluginItem)it.Tag);
             }
-            if (plugins.Count + cmsItems.Count == 0)
+            if (plugins.Count == 0)
             {
                 MessageBox.Show(this, Strings.T("NothingTicked"), Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            string cmsDir = CmsDir;
-            if (cmsItems.Count > 0)
-            {
-                if (cmsDir == null)
-                {
-                    tabs.SelectedTab = tabCms;
-                    MessageBox.Show(this, Strings.T("NoCmsDir"), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                // The projects folder exists but has no cms folder yet: create it for an install.
-                if (!Directory.Exists(cmsDir))
-                {
-                    string parent = Path.GetDirectoryName(cmsDir);
-                    if (remove || parent == null || !Directory.Exists(parent))
-                    {
-                        MessageBox.Show(this, Strings.F("CmsNotExist", cmsDir), Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                }
-            }
-            if (remove && MessageBox.Show(this, Strings.F(onCms ? "ConfirmRemoveCms" : "ConfirmRemovePlugins", handled.Count), Text,
+            if (remove && MessageBox.Show(this, Strings.F("ConfirmRemovePlugins", handled.Count), Text,
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
-            string cmsLang = rbEs.Checked ? "es" : "en";
             bool paratextRunning = ParatextPaths.ParatextRunning();
+            bool checksPlugin = false;
+            foreach (PluginItem p in plugins) if (p.Key == ChecksPluginKey) checksPlugin = true;
             txtLog.Clear();
             SetBusy(true);
             Thread t = new Thread(delegate()
@@ -529,33 +568,23 @@ namespace PhilsTools
                 int problems = 0;
                 try
                 {
-                    if (plugins.Count > 0)
+                    if (paratextRunning)
                     {
-                        if (paratextRunning)
-                        {
-                            Log(Strings.T("PluginsSkipped"));
-                            problems++;
-                        }
-                        else
-                        {
-                            if (!remove) Log(Strings.T("UacNote"));
-                            foreach (PluginItem p in plugins)
-                            {
-                                Log("");
-                                Log(Strings.F(remove ? "Removing" : "Installing", p.Name[Strings.Lang]));
-                                int code;
-                                try { code = PluginRunner.Run(bundle, p, remove, Log); }
-                                catch (Exception ex) { Log("  " + ex.Message); code = 1; }
-                                if (code != 0) { problems++; Log(Strings.F("ScriptFailed", p.Name[Strings.Lang])); }
-                            }
-                        }
+                        Log(Strings.T("PluginsSkipped"));
+                        problems++;
                     }
-                    if (cmsItems.Count > 0)
+                    else
                     {
-                        Log("");
-                        if (!Directory.Exists(cmsDir)) Directory.CreateDirectory(cmsDir);
-                        CmsInstaller cms = new CmsInstaller(bundle, cmsDir);
-                        problems += remove ? cms.Remove(cmsItems, Log) : cms.Install(cmsItems, cmsLang, Log);
+                        if (!remove) Log(Strings.T("UacNote"));
+                        foreach (PluginItem p in plugins)
+                        {
+                            Log("");
+                            Log(Strings.F(remove ? "Removing" : "Installing", p.Name[Strings.Lang]));
+                            int code;
+                            try { code = PluginRunner.Run(bundle, p, remove, Log); }
+                            catch (Exception ex) { Log("  " + ex.Message); code = 1; }
+                            if (code != 0) { problems++; Log(Strings.F("ScriptFailed", p.Name[Strings.Lang])); }
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -568,16 +597,56 @@ namespace PhilsTools
                 Log(Strings.T("RestartNote"));
                 // Untick what was handled (failures too: the log says what went wrong). Plugins skipped
                 // because Paratext was open keep their ticks, to try again after closing it.
-                bool keepTicks = plugins.Count > 0 && paratextRunning;
                 BeginInvoke(new Action(delegate
                 {
                     SetBusy(false);
-                    if (!keepTicks) foreach (ListViewItem it in handled) it.Checked = false;
+                    if (!paratextRunning) foreach (ListViewItem it in handled) it.Checked = false;
                     RefreshStatus();
+                    // The checks plugin is now installed: offer once to remove the old copies it replaces.
+                    if (!remove && checksPlugin && !paratextRunning && OldCount > 0 && ChecksPluginInstalled())
+                        RemoveOldCopies();
                 }));
             });
             t.IsBackground = true;
             t.Start();
+        }
+
+        bool ChecksPluginInstalled()
+        {
+            PluginItem p = bundle.FindPlugin(ChecksPluginKey);
+            return p != null && PluginRunner.Status(p, installs) == ToolStatus.Installed;
+        }
+    }
+
+    /// <summary>
+    /// A ticked list where a click anywhere on a row (name, version, status) ticks or unticks it, not
+    /// only a click on its box (1.4, the user's request). The box itself is still toggled by the list.
+    /// The press is handled here and not passed on: the list control waits for a drag after a press
+    /// and raises a click only if none happened, which proved unreliable. A ticked ListView also
+    /// toggles on a double-click, so a double-click counts as a second press: two clicks, two toggles.
+    /// </summary>
+    public class ToggleListView : ListView
+    {
+        const int WM_LBUTTONDOWN = 0x0201, WM_LBUTTONDBLCLK = 0x0203;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_LBUTTONDBLCLK) m.Msg = WM_LBUTTONDOWN;
+            if (m.Msg == WM_LBUTTONDOWN && CheckBoxes)
+            {
+                long l = m.LParam.ToInt64();
+                Point pt = new Point((short)(l & 0xFFFF), (short)((l >> 16) & 0xFFFF));
+                ListViewHitTestInfo hit = HitTest(pt);
+                if (hit.Item != null && hit.Location != ListViewHitTestLocations.StateImage)
+                {
+                    if (!Focused) Focus();
+                    hit.Item.Selected = true;
+                    hit.Item.Focused = true;
+                    hit.Item.Checked = !hit.Item.Checked;
+                    return;
+                }
+            }
+            base.WndProc(ref m);
         }
     }
 }

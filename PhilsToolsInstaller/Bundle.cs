@@ -24,6 +24,16 @@ namespace PhilsTools
         public string[] Description = new string[3];
         /// <summary>The package as its zip holds it: Install-Plugin.ps1 and Folder\file.</summary>
         public List<BundleFile> Files = new List<BundleFile>();
+        /// <summary>The user guides by language ("en", "es", "fr"); English is always there.</summary>
+        public Dictionary<string, BundleFile> Guides = new Dictionary<string, BundleFile>();
+
+        /// <summary>The guide in this language, or the English one.</summary>
+        public BundleFile GuideFor(string lang)
+        {
+            BundleFile f;
+            if (Guides.TryGetValue(lang, out f)) return f;
+            return Guides.TryGetValue("en", out f) ? f : null;
+        }
 
         public string ShaOf(string target)
         {
@@ -107,6 +117,9 @@ namespace PhilsTools
                         }
                     case "F":
                         plugins[f[1]].Files.Add(NewFile(f[2], f[3], f[4]));
+                        break;
+                    case "G":
+                        plugins[f[1]].Guides[f[2]] = NewFile(f[3], f[4], f[5]);
                         break;
                     case "S":
                         {

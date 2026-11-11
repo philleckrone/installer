@@ -5,8 +5,8 @@
 #
 # The capture drives the real installer on this computer's real Paratext (the user's choice):
 # Paratext must be closed. The demo plugin ($Plugin) is removed first and installed again in the
-# window; the demo CMS tool ($CmsTool) is removed from the live cms folder and installed again, and
-# afterwards put back in the languages it had. With an admin-only plugins folder (Paratext 9 Beta)
+# window (the installer has no CMS tab since 1.3: the CMS checks come with the Phils Custom (cms)
+# Checks plugin). With an admin-only plugins folder (Paratext 9 Beta)
 # Windows asks for administrator permission at the removal and at the install: someone must click
 # Yes. The pictures of Google Drive, the browser and Windows' warnings are the user's screenshots
 # (install_*_en.png in this folder); a step whose picture is missing is left out.
@@ -15,9 +15,8 @@ param(
     [string]$Work = '',
     # The installer as it is shipped.
     [string]$Exe = '',
-    # The plugin installed in the video (a key of make_installers.TOOLS) and the CMS tool (catalog id).
+    # The plugin installed in the video (a key of make_installers.TOOLS).
     [string]$Plugin = 'BulkNotes',
-    [string]$CmsTool = 'short_v_1',
     # An Azure voice (a name ending in 'Neural'; key and region from AZURE_SPEECH_KEY /
     # AZURE_SPEECH_REGION, see azure_tts.ps1) or a Windows voice (System.Speech).
     [string]$Voice = '',
@@ -28,8 +27,8 @@ param(
     [switch]$Reuse,
     # Only capture (then build with -Reuse).
     [switch]$CaptureOnly,
-    # Only the plugin steps (ticked, installed) for the plugin videos' install section: the CMS
-    # tool is not touched. Use with -CaptureOnly.
+    # Only the plugin steps (ticked, installed) for the plugin videos' install section (the same
+    # steps as the full video since the CMS tab was removed). Use with -CaptureOnly.
     [switch]$PluginOnly,
     [switch]$Zoom,
     [switch]$NoVoice,
@@ -212,6 +211,36 @@ public static class InMsg {
         GetDpiForMonitor(MonitorFromPoint(p, 2), 0, out dx, out dy); return dx;
     }
     public static bool Ticked(IntPtr lv, int i) { return (((int)SendMessage(lv, 0x102C, (IntPtr)i, (IntPtr)0xF000)) >> 12) == 2; }
+    [DllImport("kernel32.dll")] static extern bool IsWow64Process(IntPtr p, out bool wow);
+    /// <summary>A row's text (column 0), LVM_GETITEMTEXTW with the text buffer in the list's
+    /// process; the installer runs as a 32-bit process, which has the 32-bit LVITEM layout.</summary>
+    public static string ItemText(IntPtr lv, int i) {
+        uint pid; GetWindowThreadProcessId(lv, out pid);
+        IntPtr p = OpenProcess(0x0008 | 0x0010 | 0x0020, false, pid);
+        if (p == IntPtr.Zero) throw new Exception("OpenProcess failed");
+        const int head = 96, chars = 260;
+        IntPtr mem = VirtualAllocEx(p, IntPtr.Zero, (IntPtr)(head + chars * 2), 0x3000, 0x04);
+        try {
+            byte[] b = new byte[head];
+            BitConverter.GetBytes(0x0001).CopyTo(b, 0);                          // LVIF_TEXT
+            BitConverter.GetBytes(i).CopyTo(b, 4);
+            bool wow; IsWow64Process(p, out wow);
+            if (wow) { BitConverter.GetBytes((int)(((long)mem) + head)).CopyTo(b, 20); BitConverter.GetBytes(chars).CopyTo(b, 24); }
+            else { BitConverter.GetBytes(((long)mem) + head).CopyTo(b, 24); BitConverter.GetBytes(chars).CopyTo(b, 32); }
+            IntPtr done;
+            WriteProcessMemory(p, mem, b, (IntPtr)b.Length, out done);
+            int n = (int)SendMessage(lv, 0x1073, (IntPtr)i, mem);
+            byte[] t = new byte[chars * 2];
+            ReadProcessMemory(p, (IntPtr)(((long)mem) + head), t, (IntPtr)t.Length, out done);
+            return Encoding.Unicode.GetString(t, 0, Math.Max(0, n) * 2);
+        } finally { VirtualFreeEx(p, mem, IntPtr.Zero, 0x8000); CloseHandle(p); }
+    }
+    /// <summary>The row whose text is the name (-1 when none).</summary>
+    public static int FindRow(IntPtr lv, string name) {
+        int n = (int)SendMessage(lv, 0x1004, IntPtr.Zero, IntPtr.Zero);
+        for (int i = 0; i < n; i++) if (ItemText(lv, i) == name) return i;
+        return -1;
+    }
 }
 '@
 
@@ -232,42 +261,31 @@ if (Get-Process -Name Paratext -ErrorAction SilentlyContinue) { throw 'Paratext 
 if (Test-Path $Work) { Remove-Item -Recurse -Force $Work }
 New-Item -ItemType Directory -Force $shots, $frames | Out-Null
 
-# What the command line says is installed now: the row order of each list, and the CMS tool's
-# languages (to put back afterwards).
-function Status {
-    $lines = @(& $Exe --cli status | ForEach-Object { "$_" })
-    $p = @($lines | Where-Object { $_ -like "P`t*" } | ForEach-Object { ($_ -split "`t")[1] })
-    $ps = @($lines | Where-Object { $_ -like "P`t*" } | ForEach-Object { ($_ -split "`t")[3] })
-    $c = @($lines | Where-Object { $_ -like "C`t*" })
-    @{ Plugins = $p; PluginStatus = $ps; Cms = @($c | ForEach-Object { ($_ -split "`t")[1] }); CmsLines = $c }
+# What the command line says about the demo plugin: its status (to put back afterwards) and its
+# name in this language. The window sorts the list by name, so the row is found by that name.
+function PluginStatus {
+    $line = @(& $Exe --cli status --lang $Lang | ForEach-Object { "$_" } | Where-Object { $_ -like "P`t$Plugin`t*" })
+    if ($line.Count -eq 0) { throw "no plugin $Plugin in the installer" }
+    $f = $line[0] -split "`t"
+    @{ Status = $f[3]; Name = $f[4] }
 }
-$st0 = Status
-$pluginRow = [array]::IndexOf($st0.Plugins, $Plugin)
-$cmsRow = [array]::IndexOf($st0.Cms, $CmsTool)
-if ($pluginRow -lt 0) { throw "no plugin $Plugin in the installer" }
-if ($cmsRow -lt 0) { throw "no CMS tool $CmsTool in the installer" }
-$pluginBefore = $st0.PluginStatus[$pluginRow]
-$cmsLangsBefore = @((($st0.CmsLines[$cmsRow] -split "`t") + @('', '', ''))[3] -split ',' | Where-Object { $_ })
-"before: $Plugin row $pluginRow; $CmsTool row $cmsRow, languages '$($cmsLangsBefore -join ',')'"
+$st0 = PluginStatus
+$pluginBefore = $st0.Status
+$pluginName = $st0.Name
+"before: $Plugin ($pluginName) $pluginBefore"
 
-# The demo starts from "not installed": both are removed first (the plugin's removal may ask for
+# The demo starts from "not installed": the plugin is removed first (this may ask for
 # administrator permission: click Yes).
 "removing $Plugin (Windows may ask for administrator permission: click Yes)" | Out-Host
 & $Exe --cli remove $Plugin | Out-Null
 if ($LASTEXITCODE -ne 0) { throw "could not remove $Plugin first" }
-if (-not $PluginOnly) { & $Exe --cli remove $CmsTool | Out-Null }
 
 $script:proc = $null
 $script:hwnd = [IntPtr]::Zero
 function Restore {
-    # Everything back as it was: the CMS tool in the languages it had (or removed, if it had none),
-    # and the plugin removed again if it was not installed before.
-    if (-not $PluginOnly) {
-        & $Exe --cli remove $CmsTool | Out-Null
-        foreach ($l in $cmsLangsBefore) { & $Exe --cli install $CmsTool --cmslang $l | Out-Null }
-    }
+    # The plugin back as it was: removed again if it was not installed before.
     if ($pluginBefore -eq 'NotInstalled') { & $Exe --cli remove $Plugin | Out-Null }
-    elseif ((Status).PluginStatus[$pluginRow] -ne 'Installed') { & $Exe --cli install $Plugin | Out-Null }
+    elseif ((PluginStatus).Status -ne 'Installed') { & $Exe --cli install $Plugin | Out-Null }
 }
 trap {
     if ($script:proc -and -not $script:proc.HasExited) { $script:proc.Kill(); $script:proc.WaitForExit(5000) | Out-Null }
@@ -374,15 +392,16 @@ function WaitForLog {
 }
 
 # ------------------------------------------------------------ the demo
-# The window as it opens: the language box, the Paratext line, the two tabs.
-$tab = Ctl '*SysTabControl32*'
+# The window as it opens: the language box, the Paratext line, the plugins (sorted by name).
 $langBox = @(Controls | Where-Object { $_.Class -like '*COMBOBOX*' } | Sort-Object { $_.Rect[1] })[0]
 $found = Ctl '*STATIC*' $foundText
-$tabs = @(([InMsg]::ClientRect($tab.H, 0x130A, 0, 0, 0)), ([InMsg]::ClientRect($tab.H, 0x130A, 1, 0, 0)))
-Step 'w1_window' @(@(, $langBox.Rect), @(, $found.Rect), $tabs) -1
+$heading = Ctl '*STATIC*' (T 'Paratext plugins' 'Complementos de Paratext' "Modules compl$([char]0xE9)mentaires de Paratext")
+$lv = ListView
+$pluginRow = [InMsg]::FindRow($lv.H, $pluginName)
+if ($pluginRow -lt 0) { throw "no row named '$pluginName' in the window" }
+Step 'w1_window' @(@(, $langBox.Rect), @(, $found.Rect), @($heading.Rect, $lv.Rect)) -1
 
 # The Status column.
-$lv = ListView
 Step 'w2_status' @(, (Column $lv 2)) -1
 
 # The plugin ticked: its row, the description box, the Install button.
@@ -401,55 +420,11 @@ if ([InMsg]::Ticked($lv.H, $pluginRow)) { throw 'the row is still ticked after t
 Show $lv $pluginRow
 Step 'w5_done' @(@(, (Cell $lv $pluginRow 2)), @(, (Edits)[-1].Rect)) -1
 
-if (-not $PluginOnly) {
-# The CMS tab: the cms folder and the language of the tools.
-[InMsg]::SendMessage($tab.H, 0x1330, [IntPtr]1, [IntPtr]::Zero) | Out-Null       # TCM_SETCURFOCUS
-Start-Sleep -Milliseconds 1000
-$lv = ListView
-if ($lv.Rect[1] -lt 0) { throw 'the CMS tab did not open' }
-$folder = @(Controls | Where-Object { $_.Class -like '*COMBOBOX*' } | Sort-Object { $_.Rect[1] })[1]
-$folderLabel = Ctl '*STATIC*' (T 'cms folder:' 'Carpeta cms:' 'Dossier cms :')
-$rbEn = Ctl '*BUTTON*' 'English'
-$rbEs = Ctl '*BUTTON*' "Espa$([char]0xF1)ol"
-$langLabel = Ctl '*STATIC*' (T 'Install the CMS tools in:' 'Instalar las herramientas CMS en:' 'Installer les outils CMS en :')
-Click $(if ($es) { $rbEs.H } else { $rbEn.H })
-Step 'w6_cms' @(@($folderLabel.Rect, $folder.Rect), @($langLabel.Rect, $rbEn.Rect, $rbEs.Rect)) -1
-
-# A CMS tool ticked and installed.
-Show $lv $cmsRow
-[InMsg]::Tick($lv.H, $cmsRow, $true)
-Start-Sleep -Milliseconds 600
-Click $install.H
-WaitForLog
-Show $lv $cmsRow
-Step 'w7_cmsdone' @(@(, (Row $lv $cmsRow)), @(, (Edits)[-1].Rect)) 0
-
-# Remove: the tool ticked, Remove clicked, the question shown; answered No.
-[InMsg]::Tick($lv.H, $cmsRow, $true)
-Start-Sleep -Milliseconds 500
-$remove = Ctl '*BUTTON*' $removeText
-Click $remove.H
-Start-Sleep -Milliseconds 1200
-$dlg = $null
-for ($i = 0; $i -lt 30 -and -not $dlg; $i++) {
-    $byProcess = New-Object Windows.Automation.PropertyCondition ($AE::ProcessIdProperty, $script:proc.Id)
-    $dlg = @($root.FindAll($Scope::Descendants, $byProcess)) | Where-Object { $_.Current.ClassName -eq '#32770' } | Select-Object -First 1
-    if (-not $dlg) { Start-Sleep -Milliseconds 200 }
-}
-if (-not $dlg) { throw 'the question before removing did not appear' }
-$dlgH = [IntPtr]$dlg.Current.NativeWindowHandle
-$df = [DmWin]::Frame($dlgH); $dlgRect = @($df.L, $df.T, ($df.R - $df.L), ($df.B - $df.T))
-Step 'w8_remove' @(@(, (Row $lv $cmsRow)), @(, $remove.Rect), @(, $dlgRect)) 1
-[InMsg]::PostMessage($dlgH, 0x0111, [IntPtr]7, [IntPtr]::Zero) | Out-Null      # WM_COMMAND IDNO
-Start-Sleep -Milliseconds 800
-}
-
 $script:proc.CloseMainWindow() | Out-Null
 $script:proc.WaitForExit(10000) | Out-Null
 if (-not $script:proc.HasExited) { $script:proc.Kill(); $script:proc.WaitForExit(5000) | Out-Null }
 Restore
-$after = Status
-"after: $(($after.CmsLines[$cmsRow]))"
+"after: $Plugin $((PluginStatus).Status)"
 $script:steps | Export-Clixml -LiteralPath $stepsFile
 
 # The short install section for the plugin videos (the standard, section 9): this language's
@@ -484,7 +459,7 @@ $menuBoxes = @{
 }
 $menuShot = Join-Path (Split-Path (Split-Path $here)) "Bulk_Notes\demo\tools_menu_$Lang.png"
 $order0 = @('d1_folder', 'd2_download', 'd3_dangerous', 'd4_save', 'd5_warning', 'd6_runanyway',
-            'w1_window', 'w2_status', 'w3_tick', 'w4_uac', 'w5_done', 'w6_cms', 'w7_cmsdone', 'w8_remove', 'w9_ready')
+            'w1_window', 'w2_status', 'w3_tick', 'w4_uac', 'w5_done', 'w9_ready')
 $all = @()
 foreach ($id in $order0) {
     $cap = $script:steps | Where-Object { $_.Id -eq $id } | Select-Object -First 1

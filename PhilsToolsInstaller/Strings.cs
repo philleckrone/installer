@@ -6,7 +6,7 @@ namespace PhilsTools
     /// <summary>The installer's texts in English, Spanish and French (index 0, 1, 2).</summary>
     public static class Strings
     {
-        public const string ToolVersion = "1.2";
+        public const string ToolVersion = "1.6";
         public static int Lang;
 
         static readonly Dictionary<string, string[]> texts = new Dictionary<string, string[]>
@@ -17,9 +17,12 @@ namespace PhilsTools
                 "Tick the tools you want, then click Install. Tools already installed can be updated or removed the same way.",
                 "Marque las herramientas que desea y haga clic en Instalar. Las herramientas ya instaladas se pueden actualizar o quitar de la misma manera.",
                 "Cochez les outils voulus, puis cliquez sur Installer. Les outils d\u00e9j\u00e0 install\u00e9s peuvent \u00eatre mis \u00e0 jour ou supprim\u00e9s de la m\u00eame fa\u00e7on." } },
+            { "CmsNote", new[] {
+                "The CMS checks are now installed as Phils Custom (cms) Checks.",
+                "Las verificaciones CMS ahora se instalan como Verificaciones personalizadas (cms) de Phil.",
+                "Les v\u00E9rifications CMS s'installent maintenant comme V\u00E9rifications personnalis\u00E9es (cms) de Phil." } },
             { "Language", new[] { "Language:", "Idioma:", "Langue :" } },
             { "TabPlugins", new[] { "Paratext plugins", "Complementos de Paratext", "Modules compl\u00e9mentaires de Paratext" } },
-            { "TabCms", new[] { "CMS custom tools", "Herramientas personalizadas (CMS)", "Outils personnalis\u00e9s (CMS)" } },
             { "ColName", new[] { "Name", "Nombre", "Nom" } },
             { "ColVersion", new[] { "Version", "Versi\u00f3n", "Version" } },
             { "ColStatus", new[] { "Status", "Estado", "\u00c9tat" } },
@@ -38,14 +41,11 @@ namespace PhilsTools
                 "Paratext is open. Close Paratext before installing or removing plugins, then click Refresh.",
                 "Paratext est\u00e1 abierto. Cierre Paratext antes de instalar o quitar complementos y haga clic en Actualizar.",
                 "Paratext est ouvert. Fermez Paratext avant d'installer ou de supprimer des modules, puis cliquez sur Actualiser." } },
+            { "Guide", new[] { "User guide", "Gu\u00eda del usuario", "Guide de l'utilisateur" } },
+            { "GuideError", new[] { "The user guide could not be opened: {0}", "No se pudo abrir la gu\u00eda del usuario: {0}", "Le guide de l'utilisateur n'a pas pu \u00eatre ouvert : {0}" } },
+            { "OpenElsewhere", new[] { "Open in another program", "Abrir con otro programa", "Ouvrir avec un autre programme" } },
+            { "CannotOpenElsewhere", new[] { "Windows could not open the file in another program: {0}", "Windows no pudo abrir el archivo con otro programa: {0}", "Windows n'a pas pu ouvrir le fichier avec un autre programme : {0}" } },
             { "Refresh", new[] { "Refresh", "Actualizar", "Actualiser" } },
-            { "CmsFolder", new[] { "cms folder:", "Carpeta cms:", "Dossier cms :" } },
-            { "Browse", new[] { "Browse...", "Examinar...", "Parcourir..." } },
-            { "BrowseTitle", new[] {
-                "Choose the cms folder inside your Paratext projects folder (for example C:\\My Paratext 9 Projects\\cms).",
-                "Elija la carpeta cms dentro de la carpeta de proyectos de Paratext (por ejemplo C:\\My Paratext 9 Projects\\cms).",
-                "Choisissez le dossier cms dans le dossier des projets Paratext (par exemple C:\\My Paratext 9 Projects\\cms)." } },
-            { "CmsLang", new[] { "Install the CMS tools in:", "Instalar las herramientas CMS en:", "Installer les outils CMS en :" } },
             { "SelectAll", new[] { "Select all", "Marcar todo", "Tout cocher" } },
             { "SelectNone", new[] { "Select none", "Desmarcar todo", "Tout d\u00e9cocher" } },
             { "Install", new[] { "Install / update ticked", "Instalar / actualizar los marcados", "Installer / mettre \u00e0 jour" } },
@@ -54,7 +54,6 @@ namespace PhilsTools
             { "Menu", new[] { "Menu: Tools > {0}", "Men\u00fa: Herramientas > {0}", "Menu : Outils > {0}" } },
             { "NothingTicked", new[] { "Tick the tools you want first.", "Primero marque las herramientas que desea.", "Cochez d'abord les outils voulus." } },
             { "ConfirmRemovePlugins", new[] { "Remove {0} plugin(s)?", "\u00bfQuitar {0} complemento(s)?", "Supprimer {0} module(s) ?" } },
-            { "ConfirmRemoveCms", new[] { "Remove {0} CMS tool(s)?", "\u00bfQuitar {0} herramienta(s) CMS?", "Supprimer {0} outil(s) CMS ?" } },
             { "PluginsSkipped", new[] {
                 "Paratext is open, so no plugin was changed. Close Paratext and try again.",
                 "Paratext est\u00e1 abierto, as\u00ed que no se cambi\u00f3 ning\u00fan complemento. Cierre Paratext e int\u00e9ntelo de nuevo.",
@@ -68,17 +67,20 @@ namespace PhilsTools
             { "Done", new[] { "Finished.", "Terminado.", "Termin\u00e9." } },
             { "DoneErrors", new[] { "Finished with {0} problem(s): see the messages above.", "Terminado con {0} problema(s): vea los mensajes de arriba.", "Termin\u00e9 avec {0} probl\u00e8me(s) : voir les messages ci-dessus." } },
             { "RestartNote", new[] { "Start (or restart) Paratext to see the changes.", "Inicie (o reinicie) Paratext para ver los cambios.", "D\u00e9marrez (ou red\u00e9marrez) Paratext pour voir les changements." } },
-            { "NoCmsDir", new[] { "Choose the cms folder first.", "Primero elija la carpeta cms.", "Choisissez d'abord le dossier cms." } },
-            { "CmsNotExist", new[] { "The folder {0} does not exist.", "La carpeta {0} no existe.", "Le dossier {0} n'existe pas." } },
-            { "AlsoInstalls", new[] { "Also installs: {0}", "Tambi\u00e9n instala: {0}", "Installe aussi : {0}" } },
-            { "OnlyIn", new[] { "Available in: {0}", "Disponible en: {0}", "Disponible en : {0}" } },
-            { "Wrote", new[] { "  Installed {0}", "  Instalado {0}", "  Install\u00e9 {0}" } },
-            { "Unchanged", new[] { "  {0} is already up to date", "  {0} ya est\u00e1 actualizado", "  {0} est d\u00e9j\u00e0 \u00e0 jour" } },
             { "BackedUp", new[] { "  {0} had been changed by hand: it was kept as {1}", "  {0} hab\u00eda sido modificado a mano: se guard\u00f3 como {1}", "  {0} avait \u00e9t\u00e9 modifi\u00e9 \u00e0 la main : il a \u00e9t\u00e9 gard\u00e9 sous le nom {1}" } },
             { "Deleted", new[] { "  Removed {0}", "  Quitado {0}", "  Supprim\u00e9 {0}" } },
             { "Kept", new[] { "  Kept {0}: {1} still uses it", "  Se conserv\u00f3 {0}: {1} todav\u00eda lo usa", "  {0} conserv\u00e9 : {1} l'utilise encore" } },
             { "FileError", new[] { "  Could not change {0}: {1}", "  No se pudo cambiar {0}: {1}", "  Impossible de modifier {0} : {1}" } },
-            { "LanguageNote", new[] { "  ({0} is only available in {1}.)", "  ({0} solo est\u00e1 disponible en {1}.)", "  ({0} n'est disponible qu'en {1}.)" } },
+            { "OldCopies", new[] {
+                "{0} CMS check(s) from an earlier install are still in {1}. They now come with the Phils Custom (cms) Checks plugin.",
+                "{0} verificaci\u00f3n(es) CMS de una instalaci\u00f3n anterior siguen en {1}. Ahora vienen con el complemento Verificaciones personalizadas (cms) de Phil.",
+                "{0} v\u00e9rification(s) CMS d'une installation pr\u00e9c\u00e9dente sont encore dans {1}. Elles viennent maintenant avec le module V\u00e9rifications personnalis\u00e9es (cms) de Phil." } },
+            { "OldRemove", new[] { "Remove old CMS copies...", "Quitar las copias CMS antiguas...", "Supprimer les anciennes copies CMS..." } },
+            { "OldConfirm", new[] {
+                "The checks now come with the Phils Custom (cms) Checks plugin.\n\nRemove the {0} old copies from:\n{1}\n\nFiles you changed by hand are kept as .bak copies, and other tools in the cms folder are not touched.",
+                "Las verificaciones vienen ahora con el complemento Verificaciones personalizadas (cms) de Phil.\n\n\u00bfQuitar las {0} copias antiguas de:\n{1}?\n\nLos archivos que usted cambi\u00f3 a mano se guardan como copias .bak, y las dem\u00e1s herramientas de la carpeta cms no se tocan.",
+                "Les v\u00e9rifications viennent maintenant avec le module V\u00e9rifications personnalis\u00e9es (cms) de Phil.\n\nSupprimer les {0} anciennes copies de :\n{1} ?\n\nLes fichiers que vous avez modifi\u00e9s \u00e0 la main sont gard\u00e9s comme copies .bak, et les autres outils du dossier cms ne sont pas touch\u00e9s." } },
+            { "OldRemoving", new[] { "Removing old CMS copies from {0}", "Quitando las copias CMS antiguas de {0}", "Suppression des anciennes copies CMS de {0}" } },
             { "ScriptFailed", new[] { "  {0}: the installer reported a problem (see above).", "  {0}: el instalador inform\u00f3 de un problema (vea arriba).", "  {0} : le programme d'installation a signal\u00e9 un probl\u00e8me (voir ci-dessus)." } },
         };
 

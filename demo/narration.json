@@ -2,7 +2,7 @@
   "cues": "{1} before a phrase shows box 1 of the step from there on, {0,2} boxes 0 and 2, {} none; the pointer goes on the first box named. Cues are not spoken or shown. 'q' is the step's question in the YouTube timecodes (youtubetext.txt).",
   "youtube": {
     "en": {
-      "about": "Install Phil's tools is one program that installs, updates and removes all of Phil's Paratext plugins and CMS custom tools. Download it once, tick the tools you want, and click Install. It finds every Paratext 9 on the computer and checks each file before installing it.",
+      "about": "Install Phil's tools is one program that installs, updates and removes all of Phil's Paratext plugins. The CMS checks come with the Phils Custom (cms) Checks plugin. Download it once, tick the tools you want, and click Install. It finds every Paratext 9 on the computer and checks each file before installing it.",
       "download": "Download Install_Phils_tools.exe from the Paratext Plugins folder:",
       "link": "https://short.do/HgUb7T",
       "credits": [
@@ -14,7 +14,7 @@
       ]
     },
     "es": {
-      "about": "Install Phil's tools es un solo programa que instala, actualiza y quita todos los complementos de Paratext y las herramientas personalizadas (CMS) de Phil. Descárguelo una vez, marque las herramientas que desea y haga clic en Instalar. Encuentra cada Paratext 9 de la computadora y verifica cada archivo antes de instalarlo.",
+      "about": "Install Phil's tools es un solo programa que instala, actualiza y quita todos los complementos de Paratext de Phil. Las verificaciones CMS vienen con el complemento Verificaciones personalizadas (cms) de Phil. Descárguelo una vez, marque las herramientas que desea y haga clic en Instalar. Encuentra cada Paratext 9 de la computadora y verifica cada archivo antes de instalarlo.",
       "download": "Descargue Install_Phils_tools.exe de la carpeta Paratext Plugins:",
       "link": "https://short.do/HgUb7T",
       "credits": [
@@ -26,7 +26,7 @@
       ]
     },
     "fr": {
-      "about": "Install Phil's tools est un seul programme qui installe, met à jour et supprime tous les modules complémentaires de Paratext et les outils personnalisés (CMS) de Phil. Téléchargez-le une fois, cochez les outils voulus et cliquez sur Installer. Il trouve chaque Paratext 9 de l'ordinateur et vérifie chaque fichier avant de l'installer.",
+      "about": "Install Phil's tools est un seul programme qui installe, met à jour et supprime tous les modules complémentaires de Paratext de Phil. Les vérifications CMS viennent avec le module Vérifications personnalisées (cms) de Phil. Téléchargez-le une fois, cochez les outils voulus et cliquez sur Installer. Il trouve chaque Paratext 9 de l'ordinateur et vérifie chaque fichier avant de l'installer.",
       "download": "Téléchargez Install_Phils_tools.exe depuis le dossier Paratext Plugins :",
       "link": "https://short.do/HgUb7T",
       "credits": [
@@ -43,15 +43,15 @@
       "id": "title",
       "en": {
         "title": "Installing Phil's tools",
-        "text": "One program installs all of Phil's tools for Paratext: the plugins and the CMS custom tools. This video shows how to get it and use it."
+        "text": "One program installs all of Phil's tools for Paratext: the Paratext plugins. This video shows how to get it and use it."
       },
       "es": {
         "title": "Instalar las herramientas de Phil",
-        "text": "Un solo programa instala todas las herramientas de Phil para Paratext: los complementos y las herramientas personalizadas CMS. Este video muestra cómo conseguirlo y usarlo."
+        "text": "Un solo programa instala todas las herramientas de Phil para Paratext: los complementos de Paratext. Este video muestra cómo conseguirlo y usarlo."
       },
       "fr": {
         "title": "Installer les outils de Phil",
-        "text": "Un seul programme installe tous les outils de Phil pour Paratext : les modules complémentaires et les outils personnalisés CMS. Cette vidéo montre comment l'obtenir et l'utiliser."
+        "text": "Un seul programme installe tous les outils de Phil pour Paratext : les modules complémentaires de Paratext. Cette vidéo montre comment l'obtenir et l'utiliser."
       }
     },
     {
@@ -164,17 +164,17 @@
       "en": {
         "title": "The installer opens",
         "q": "What does the installer show?",
-        "text": "The installer opens. {0}Choose your language here. {1}This line shows the Paratext 9 programs it found. {2}There are two tabs: Paratext plugins, and CMS custom tools."
+        "text": "The installer opens. {0}Choose your language here. {1}This line shows the Paratext 9 programs it found. {2}Below it, the Paratext plugins are listed in alphabetical order. The CMS checks now come with the Phils Custom (cms) Checks plugin."
       },
       "es": {
         "title": "Se abre el instalador",
         "q": "¿Qué muestra el instalador?",
-        "text": "Se abre el instalador. {0}Elija su idioma aquí. {1}Esta línea muestra los programas Paratext 9 que encontró. {2}Hay dos pestañas: Complementos de Paratext y Herramientas personalizadas CMS."
+        "text": "Se abre el instalador. {0}Elija su idioma aquí. {1}Esta línea muestra los programas Paratext 9 que encontró. {2}Debajo aparecen los complementos de Paratext en orden alfabético. Las verificaciones CMS vienen ahora con el complemento Verificaciones personalizadas (cms) de Phil."
       },
       "fr": {
         "title": "Le programme d'installation s'ouvre",
         "q": "Que montre le programme d'installation ?",
-        "text": "Le programme d'installation s'ouvre. {0}Choisissez votre langue ici. {1}Cette ligne montre les programmes Paratext 9 trouvés. {2}Il y a deux onglets : Modules complémentaires de Paratext et Outils personnalisés CMS."
+        "text": "Le programme d'installation s'ouvre. {0}Choisissez votre langue ici. {1}Cette ligne montre les programmes Paratext 9 trouvés. {2}En dessous, les modules complémentaires de Paratext sont listés par ordre alphabétique. Les vérifications CMS viennent maintenant avec le module Vérifications personnalisées (cms) de Phil."
       }
     },
     {
@@ -241,57 +241,6 @@
       "fr": {
         "title": "L'outil est installé",
         "text": "Windows peut demander l'autorisation de modifier les dossiers du programme Paratext. Cliquez sur Oui. {1}Les messages montrent chaque étape. {0}À la fin, l'état indique Installé et la case est décochée."
-      }
-    },
-    {
-      "id": "w6_cms",
-      "en": {
-        "title": "CMS custom tools",
-        "q": "How do I install a CMS custom tool?",
-        "text": "The second tab has the CMS custom tools. {0}They go into the cms folder of your Paratext projects folder. {1}Choose English or Spanish for these tools."
-      },
-      "es": {
-        "title": "Herramientas personalizadas CMS",
-        "q": "¿Cómo instalo una herramienta personalizada CMS?",
-        "text": "La segunda pestaña tiene las herramientas personalizadas CMS. {0}Se copian en la carpeta cms de su carpeta de proyectos de Paratext. {1}Elija inglés o español para estas herramientas."
-      },
-      "fr": {
-        "title": "Outils personnalisés CMS",
-        "q": "Comment installer un outil personnalisé CMS ?",
-        "text": "Le deuxième onglet contient les outils personnalisés CMS. {0}Ils vont dans le dossier cms de votre dossier de projets Paratext. {1}Ces outils existent en anglais ou en espagnol : choisissez la langue."
-      }
-    },
-    {
-      "id": "w7_cmsdone",
-      "en": {
-        "title": "Install a CMS tool",
-        "text": "{0}Tick a tool, such as Short Verse 1, and click Install. {1}Its files are copied into the cms folder."
-      },
-      "es": {
-        "title": "Instale una herramienta CMS",
-        "text": "{0}Marque una herramienta, como Versículo 1 corto, y haga clic en Instalar. {1}Sus archivos se copian en la carpeta cms."
-      },
-      "fr": {
-        "title": "Installez un outil CMS",
-        "text": "{0}Cochez un outil, comme Short Verse 1, et cliquez sur Installer. {1}Ses fichiers sont copiés dans le dossier cms."
-      }
-    },
-    {
-      "id": "w8_remove",
-      "en": {
-        "title": "Remove a tool",
-        "q": "How do I remove a tool?",
-        "text": "{0}To remove a tool, tick it {1}and click Remove ticked. {1,2}The installer asks first."
-      },
-      "es": {
-        "title": "Quitar una herramienta",
-        "q": "¿Cómo quito una herramienta?",
-        "text": "{0}Para quitar una herramienta, márquela {1}y haga clic en Quitar los marcados. {1,2}El instalador pregunta antes."
-      },
-      "fr": {
-        "title": "Supprimer un outil",
-        "q": "Comment supprimer un outil ?",
-        "text": "{0}Pour supprimer un outil, cochez-le {1}et cliquez sur Supprimer les cochés. {1,2}Le programme demande d'abord confirmation."
       }
     },
     {

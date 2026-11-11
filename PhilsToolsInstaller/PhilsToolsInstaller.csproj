@@ -47,6 +47,9 @@
     <Compile Include="PluginRunner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Strings.cs" />
+    <Compile Include="..\..\Phils_Checks\PhilsChecksPlugin\RtfViewer.cs">
+      <Link>RtfViewer.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,10 +5,11 @@ using System.Text;
 
 namespace PhilsTools
 {
-    /// <summary>Copies CMS tools into a Paratext cms folder and removes them. The folder is shared
-    /// with other people's tools, so only files this installer knows are ever replaced or deleted:
-    /// a file whose content matches no version in the bundle and no version this installer wrote
-    /// (it was changed by hand) is kept as a .bak copy.</summary>
+    /// <summary>Finds and removes the CMS tools that earlier versions of this installer copied into a
+    /// Paratext cms folder: the checks now come with the Phils Custom (cms) Checks plugin, so there is no
+    /// install any more. The folder is shared with other people's tools, so only files this installer
+    /// knows are ever deleted: a file whose content matches no version in the bundle and no version the
+    /// installer wrote (it was changed by hand) is kept as a .bak copy.</summary>
     public class CmsInstaller
     {
         /// <summary>Name and SHA-256 of every file this installer wrote, kept in the cms folder.</summary>
@@ -64,6 +65,39 @@ namespace PhilsTools
             File.WriteAllText(Path.Combine(dir, RecordFile), sb.ToString(), new UTF8Encoding(false));
         }
 
+        /// <summary>Tools never offered for removal: Project Checker is not in the plugin (the user's
+        /// choice), so whoever installed its launcher keeps it.</summary>
+        public static readonly string[] Kept = { "project_checker" };
+
+        /// <summary>The bundle's CMS tools found in this folder (any language), minus <see cref="Kept"/>.</summary>
+        public List<CmsItem> OldCopies()
+        {
+            List<CmsItem> found = new List<CmsItem>();
+            foreach (CmsItem c in bundle.Cms)
+                if (Array.IndexOf(Kept, c.Id) < 0 && InstalledLanguages(c).Count > 0) found.Add(c);
+            return found;
+        }
+
+        /// <summary>The cms folder of every Paratext projects folder, with the old copies in it (only folders that have some).</summary>
+        public static List<KeyValuePair<string, List<CmsItem>>> FindOldCopies(Bundle bundle, string onlyDir)
+        {
+            List<KeyValuePair<string, List<CmsItem>>> result = new List<KeyValuePair<string, List<CmsItem>>>();
+            List<string> dirs = new List<string>();
+            if (!string.IsNullOrEmpty(onlyDir)) dirs.Add(onlyDir);
+            else foreach (string folder in ParatextPaths.ProjectsFolders()) dirs.Add(Path.Combine(folder, "cms"));
+            foreach (string d in dirs)
+            {
+                try
+                {
+                    if (!Directory.Exists(d)) continue;
+                    List<CmsItem> found = new CmsInstaller(bundle, d).OldCopies();
+                    if (found.Count > 0) result.Add(new KeyValuePair<string, List<CmsItem>>(d, found));
+                }
+                catch (Exception) { }
+            }
+            return result;
+        }
+
         /// <summary>Languages whose .cms is in the folder.</summary>
         public List<string> InstalledLanguages(CmsItem c)
         {
@@ -107,24 +141,6 @@ namespace PhilsTools
             return list;
         }
 
-        /// <summary>The (tool, language) pairs an install of these tools writes: each tool in the wanted
-        /// language (or its only one), and the tools it needs in English, which is what they call.
-        /// Other languages of the tool that are already installed are updated too, before the wanted
-        /// one, so the wanted language wins a file name both use.</summary>
-        public List<KeyValuePair<CmsItem, string>> Plan(IEnumerable<CmsItem> items, string wanted)
-        {
-            List<KeyValuePair<CmsItem, string>> plan = new List<KeyValuePair<CmsItem, string>>();
-            HashSet<string> seen = new HashSet<string>();
-            foreach (CmsItem c in items)
-            {
-                string lang = c.LanguageFor(wanted);
-                foreach (string other in InstalledLanguages(c))
-                    if (other != lang) AddToPlan(plan, seen, c, other);
-                AddToPlan(plan, seen, c, lang);
-            }
-            return plan;
-        }
-
         void AddToPlan(List<KeyValuePair<CmsItem, string>> plan, HashSet<string> seen, CmsItem c, string lang)
         {
             if (!seen.Add(c.Id + "|" + lang)) return;
@@ -134,55 +150,6 @@ namespace PhilsTools
                 CmsItem dep = bundle.FindCms(n);
                 if (dep != null) AddToPlan(plan, seen, dep, dep.LanguageFor("en"));
             }
-        }
-
-        /// <summary>Installs the tools. Returns the number of files that could not be written.</summary>
-        public int Install(IEnumerable<CmsItem> items, string wanted, Action<string> log)
-        {
-            int errors = 0;
-            HashSet<string> done = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<CmsItem, string> step in Plan(items, wanted))
-            {
-                CmsItem c = step.Key;
-                log(Strings.F("Installing", c.Name[Strings.Lang] + " (" + Strings.LangName(step.Value) + ")"));
-                if (step.Value != wanted && c.Languages.Count == 1)
-                    log(Strings.F("LanguageNote", c.Name[Strings.Lang], Strings.LangName(step.Value)));
-                foreach (BundleFile f in FilesFor(c, step.Value))
-                {
-                    if (!done.Add(f.Target + "|" + f.Sha)) continue;
-                    try { WriteFile(f, log); }
-                    catch (Exception ex)
-                    {
-                        errors++;
-                        log(Strings.F("FileError", f.Target, ex.Message));
-                    }
-                }
-            }
-            WriteRecord();
-            return errors;
-        }
-
-        void WriteFile(BundleFile f, Action<string> log)
-        {
-            string dest = Path.Combine(dir, f.Target);
-            byte[] data = bundle.Read(f);
-            if (File.Exists(dest))
-            {
-                string h = ParatextPaths.FileSha(dest);
-                if (h == f.Sha)
-                {
-                    record[f.Target] = f.Sha;
-                    log(Strings.F("Unchanged", f.Target));
-                    return;
-                }
-                if (!IsOurs(f.Target, h)) log(Strings.F("BackedUp", f.Target, Backup(dest)));
-                File.Delete(dest);
-            }
-            // A new file (not a write through an existing link), with no "from the internet" mark.
-            using (FileStream fs = new FileStream(dest, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-                fs.Write(data, 0, data.Length);
-            record[f.Target] = f.Sha;
-            log(Strings.F("Wrote", f.Target));
         }
 
         /// <summary>True when a file's content is a version from the bundle or one this installer wrote.</summary>

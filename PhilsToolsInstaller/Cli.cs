@@ -7,7 +7,9 @@ using System.Text;
 namespace PhilsTools
 {
     /// <summary>The command line, for tests: --cli status | install ID... | remove ID...
-    /// IDs are plugin keys (BulkNotes) or CMS tool ids (marker_space).</summary>
+    /// IDs are plugin keys (BulkNotes). remove also takes CMS tool ids (marker_space), for old copies in
+    /// the cms folder (--cmsdir, otherwise the first projects folder's): CMS tools are no longer installed,
+    /// they come with the Phils Custom (cms) Checks plugin.</summary>
     static class Cli
     {
         [DllImport("kernel32.dll")]
@@ -21,7 +23,7 @@ namespace PhilsTools
             AttachConsole(-1);
         }
 
-        public static int Run(Bundle bundle, string verb, List<string> ids, string cmsDir, string cmsLang)
+        public static int Run(Bundle bundle, string verb, List<string> ids, string cmsDir)
         {
             Attach();
             if (Console.IsOutputRedirected)
@@ -38,14 +40,15 @@ namespace PhilsTools
                 List<string> folders = ParatextPaths.ProjectsFolders();
                 if (folders.Count > 0) cmsDir = Path.Combine(folders[0], "cms");
             }
-            if (string.IsNullOrEmpty(cmsLang)) cmsLang = "en";
             List<string> installs = ParatextPaths.FindInstalls();
 
             if (verb == "status")
             {
                 Console.WriteLine("Paratext: " + string.Join("; ", installs.ToArray()));
                 foreach (PluginItem p in bundle.Plugins)
-                    Console.WriteLine("P\t" + p.Key + "\t" + p.Version + "\t" + PluginRunner.Status(p, installs));
+                    // The name (in the --lang language) lets a test find the plugin's row in the
+                    // window, which sorts the list by name.
+                    Console.WriteLine("P\t" + p.Key + "\t" + p.Version + "\t" + PluginRunner.Status(p, installs) + "\t" + p.Name[Strings.Lang]);
                 Console.WriteLine("cms: " + cmsDir);
                 if (cmsDir != null && Directory.Exists(cmsDir))
                 {
@@ -79,13 +82,14 @@ namespace PhilsTools
                 }
                 CmsItem c = bundle.FindCms(id);
                 if (c == null) { Console.Error.WriteLine("Unknown tool: " + id); errors++; continue; }
+                if (!remove) { Console.Error.WriteLine("CMS tools are no longer installed (they come with Phils Custom (cms) Checks): " + id); errors++; continue; }
                 cmsItems.Add(c);
             }
             if (cmsItems.Count > 0)
             {
                 if (cmsDir == null || !Directory.Exists(cmsDir)) { Console.Error.WriteLine("No cms folder: " + cmsDir); return 1; }
                 CmsInstaller cms = new CmsInstaller(bundle, cmsDir);
-                errors += remove ? cms.Remove(cmsItems, log) : cms.Install(cmsItems, cmsLang, log);
+                errors += cms.Remove(cmsItems, log);
             }
             return errors == 0 ? 0 : 1;
         }
