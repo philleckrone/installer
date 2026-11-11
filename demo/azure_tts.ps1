@@ -22,7 +22,7 @@ function Get-AzureSpeechSetting($name) {
 # user's request.
 $script:SayAs = @{
     # Install Phil's tools: the file name and CMS said as words (this file stays ASCII).
-    'en' = @{ 'Paratext' = 'Pair-uh-text'; 'Install_Phils_tools.exe' = 'Install Phils tools dot exe'; 'CMS' = 'C M S' }
+    'en' = @{ 'Paratext' = 'Pair-uh-text'; "Paratext's" = 'Pair-uh-texts'; 'Install_Phils_tools.exe' = 'Install Phils tools dot exe'; 'CMS' = 'C M S' }
     'es' = @{ 'Install_Phils_tools.exe' = 'Install Phils tools punto exe'; 'CMS' = 'C M S' }
     'fr' = @{ 'Install_Phils_tools.exe' = 'Install Phils tools point exe'; 'CMS' = 'C M S' }
 }
@@ -34,10 +34,19 @@ function Speak-Azure([string]$Text, [string]$Voice, [string]$OutFile, [string]$R
     $lang = ($Voice -split '-')[0..1] -join '-'
     $esc = [Security.SecurityElement]::Escape($Text)
     $words = $script:SayAs[($lang -split '-')[0]]
-    if ($words) {
-        foreach ($w in $words.Keys) {
-            $esc = [regex]::Replace($esc, '\b' + [regex]::Escape($w) + '\b', "<sub alias='$($words[$w])'>$w</sub>")
-        }
+    if ($words -and $words.Count) {
+        # One pattern for all the words, longest first, so "Paratext's" wins over "Paratext" and no
+        # <sub> lands inside another. The words are matched as the text was escaped above (' is
+        # &apos;); a typographic apostrophe is accepted too.
+        $keys = @($words.Keys | Sort-Object { $_.Length } -Descending)
+        $alts = @($keys | ForEach-Object { [regex]::Escape([Security.SecurityElement]::Escape($_)).Replace('&apos;', "(?:&apos;|$([char]0x2019))") })
+        $rx = New-Object Text.RegularExpressions.Regex ('(?<!\w)(' + ($alts -join '|') + ')(?!\w)')
+        $esc = $rx.Replace($esc, [Text.RegularExpressions.MatchEvaluator] {
+            param($m)
+            $i = 0
+            for ($k = 0; $k -lt $keys.Count; $k++) { if ([regex]::IsMatch($m.Value, '^(?:' + $alts[$k] + ')$')) { $i = $k; break } }
+            "<sub alias='$($words[$keys[$i]])'>$($m.Value)</sub>"
+        })
     }
     $ssml = "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='$lang'>" +
         "<voice name='$Voice'><prosody rate='$Rate'>$esc</prosody></voice></speak>"
