@@ -22,8 +22,10 @@ namespace PhilsTools
         public string[] Name = new string[3];
         public string[] Menu = new string[3];
         public string[] Description = new string[3];
-        /// <summary>The package as its zip holds it: Install-Plugin.ps1 and Folder\file.</summary>
+        /// <summary>The package files, as Folder\file.</summary>
         public List<BundleFile> Files = new List<BundleFile>();
+        /// <summary>Files an older version left in plugins\Folder: removed on install and uninstall.</summary>
+        public List<string> OldFiles = new List<string>();
         /// <summary>The user guides by language ("en", "es", "fr"); English is always there.</summary>
         public Dictionary<string, BundleFile> Guides = new Dictionary<string, BundleFile>();
 
@@ -111,6 +113,8 @@ namespace PhilsTools
                                 p.Menu[i] = f[10 + i];
                                 p.Description[i] = f[13 + i];
                             }
+                            if (f.Length > 16)
+                                foreach (string o in f[16].Split(',')) if (o.Length > 0) p.OldFiles.Add(o);
                             plugins[p.Key] = p;
                             Plugins.Add(p);
                             break;

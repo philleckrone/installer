@@ -2,86 +2,116 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Win32;
 
 namespace PhilsTools
 {
-    /// <summary>Paratext 9 installations and projects folders, found as Install-Plugin.ps1 finds them.</summary>
+    /// <summary>Paratext 9 installations and projects folders, found as the plugin installer (PluginInstaller) finds them.</summary>
     public static class ParatextPaths
     {
-        /// <summary>Testing only: Paratext folders to use instead of searching (";"-separated). Also passed
-        /// to Install-Plugin.ps1 as -ParatextDir with -NoElevate, which the script honours only when it
-        /// does not run as administrator.</summary>
+        /// <summary>Testing only: Paratext folders to use instead of searching (";"-separated). The plugin
+        /// installer uses them only when it does not run as administrator, and then never asks for
+        /// administrator rights.</summary>
         public static string TestInstalls;
 
         /// <summary>Folders holding Paratext.exe and PluginInterfaces.dll (Paratext 9 or later).</summary>
         public static List<string> FindInstalls()
         {
-            List<string> candidates = new List<string>();
-            if (!string.IsNullOrEmpty(TestInstalls))
+            List<string> result = new List<string>();
+            HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string c in Candidates(!string.IsNullOrEmpty(TestInstalls)))
             {
-                foreach (string d in TestInstalls.Split(';')) if (d.Trim().Length > 0) candidates.Add(d.Trim());
+                string full = LongPath(c);
+                if (full == null || !seen.Add(full)) continue;
+                if (IsParatext9(full)) result.Add(full);
             }
-            else
+            return result;
+        }
+
+        /// <summary>True when the folder holds Paratext.exe and PluginInterfaces.dll: Paratext 9 has
+        /// plugin support, Paratext 7 and 8 do not.</summary>
+        public static bool IsParatext9(string dir)
+        {
+            return File.Exists(Path.Combine(dir, "Paratext.exe")) && File.Exists(Path.Combine(dir, "PluginInterfaces.dll"));
+        }
+
+        /// <summary>Folders that may hold a Paratext: the test folders (when <paramref name="useTestInstalls"/>),
+        /// otherwise the program folders Paratext records under HKLM\SOFTWARE\Paratext\8 (values whose
+        /// names contain AppPath or start with Program_Files_Directory, e.g. Paratext9_Full_Release_AppPath,
+        /// Program_Files_Directory_Ptw91 = Beta) plus Paratext* in the Program Files folders read from the
+        /// machine registry (not from environment variables, which a user can set). Other values there,
+        /// such as Settings_Directory (the projects folder, writable by every user), are not program folders.</summary>
+        public static List<string> Candidates(bool useTestInstalls)
+        {
+            List<string> candidates = new List<string>();
+            if (useTestInstalls)
             {
-                List<string> roots = new List<string>();
-                foreach (RegistryView view in new[] { RegistryView.Registry32, RegistryView.Registry64 })
+                foreach (string d in (TestInstalls ?? "").Split(';')) if (d.Trim().Length > 0) candidates.Add(d.Trim());
+                return candidates;
+            }
+            List<string> roots = new List<string>();
+            foreach (RegistryView view in new[] { RegistryView.Registry32, RegistryView.Registry64 })
+            {
+                try
                 {
-                    try
+                    using (RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view))
                     {
-                        using (RegistryKey root = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, view))
+                        using (RegistryKey key = root.OpenSubKey(@"SOFTWARE\Paratext\8"))
                         {
-                            using (RegistryKey key = root.OpenSubKey(@"SOFTWARE\Paratext\8"))
+                            if (key != null)
                             {
-                                if (key != null)
+                                foreach (string name in key.GetValueNames())
                                 {
-                                    foreach (string name in key.GetValueNames())
-                                    {
-                                        if (name.IndexOf("AppPath", StringComparison.OrdinalIgnoreCase) < 0 &&
-                                            !name.StartsWith("Program_Files_Directory", StringComparison.OrdinalIgnoreCase)) continue;
-                                        string value = key.GetValue(name) as string;
-                                        if (value != null && value.Length > 3) candidates.Add(value);
-                                    }
+                                    if (name.IndexOf("AppPath", StringComparison.OrdinalIgnoreCase) < 0 &&
+                                        !name.StartsWith("Program_Files_Directory", StringComparison.OrdinalIgnoreCase)) continue;
+                                    string value = key.GetValue(name) as string;
+                                    if (value != null && value.Length > 3) candidates.Add(value);
                                 }
                             }
-                            using (RegistryKey cv = root.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion"))
+                        }
+                        using (RegistryKey cv = root.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion"))
+                        {
+                            if (cv != null)
                             {
-                                if (cv != null)
+                                foreach (string name in new[] { "ProgramFilesDir", "ProgramFilesDir (x86)", "ProgramW6432Dir" })
                                 {
-                                    foreach (string name in new[] { "ProgramFilesDir", "ProgramFilesDir (x86)", "ProgramW6432Dir" })
-                                    {
-                                        string value = cv.GetValue(name) as string;
-                                        if (value != null && value.Length > 3) roots.Add(value);
-                                    }
+                                    string value = cv.GetValue(name) as string;
+                                    if (value != null && value.Length > 3) roots.Add(value);
                                 }
                             }
                         }
                     }
-                    catch (Exception) { }
                 }
-                foreach (string pf in roots)
-                {
-                    try
-                    {
-                        if (Directory.Exists(pf)) candidates.AddRange(Directory.GetDirectories(pf, "Paratext*"));
-                    }
-                    catch (Exception) { }
-                }
+                catch (Exception) { }
             }
-            List<string> result = new List<string>();
-            HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (string c in candidates)
+            foreach (string pf in roots)
             {
-                string full;
-                try { full = Path.GetFullPath(c.Trim().Trim('"')).TrimEnd('\\'); }
-                catch (Exception) { continue; }
-                if (!seen.Add(full)) continue;
-                if (File.Exists(Path.Combine(full, "Paratext.exe")) && File.Exists(Path.Combine(full, "PluginInterfaces.dll")))
-                    result.Add(full);
+                try
+                {
+                    if (Directory.Exists(pf)) candidates.AddRange(Directory.GetDirectories(pf, "Paratext*"));
+                }
+                catch (Exception) { }
             }
-            return result;
+            return candidates;
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        static extern uint GetLongPathName(string shortPath, StringBuilder longPath, uint size);
+
+        /// <summary>The full path with 8.3 short names (like PROGRA~1) expanded and no closing backslash,
+        /// so two spellings of a folder compare equal; null when the path is not valid.</summary>
+        public static string LongPath(string path)
+        {
+            string full;
+            try { full = Path.GetFullPath(path.Trim().Trim('"')).TrimEnd('\\'); }
+            catch (Exception) { return null; }
+            StringBuilder sb = new StringBuilder(1024);
+            uint n = GetLongPathName(full, sb, (uint)sb.Capacity);
+            if (n > 0 && n < sb.Capacity) return sb.ToString().TrimEnd('\\');
+            return full;
         }
 
         /// <summary>Where a program that runs as administrator is installed: Program Files\Folder

@@ -23,7 +23,8 @@ namespace PhilsTools
             AttachConsole(-1);
         }
 
-        public static int Run(Bundle bundle, string verb, List<string> ids, string cmsDir)
+        /// <summary>Attach, and UTF-8 output when it goes to a pipe or file.</summary>
+        public static void Output()
         {
             Attach();
             if (Console.IsOutputRedirected)
@@ -34,6 +35,11 @@ namespace PhilsTools
                 w.AutoFlush = true;
                 Console.SetOut(w);
             }
+        }
+
+        public static int Run(Bundle bundle, string verb, List<string> ids, string cmsDir)
+        {
+            Output();
             Action<string> log = delegate(string s) { Console.WriteLine(s); };
             if (cmsDir == null)
             {
@@ -77,7 +83,7 @@ namespace PhilsTools
                 if (p != null)
                 {
                     log(Strings.F(remove ? "Removing" : "Installing", p.Name[Strings.Lang]));
-                    if (PluginRunner.Run(bundle, p, remove, log) != 0) errors++;
+                    if (PluginInstaller.Run(bundle, p, remove, log) != 0) errors++;
                     continue;
                 }
                 CmsItem c = bundle.FindCms(id);

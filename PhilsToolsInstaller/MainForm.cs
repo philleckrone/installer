@@ -581,7 +581,7 @@ namespace PhilsTools
                             Log("");
                             Log(Strings.F(remove ? "Removing" : "Installing", p.Name[Strings.Lang]));
                             int code;
-                            try { code = PluginRunner.Run(bundle, p, remove, Log); }
+                            try { code = PluginInstaller.Run(bundle, p, remove, Log); }
                             catch (Exception ex) { Log("  " + ex.Message); code = 1; }
                             if (code != 0) { problems++; Log(Strings.F("ScriptFailed", p.Name[Strings.Lang])); }
                         }
