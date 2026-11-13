@@ -6,7 +6,7 @@ namespace PhilsTools
     /// <summary>The installer's texts in English, Spanish and French (index 0, 1, 2).</summary>
     public static class Strings
     {
-        public const string ToolVersion = "2.0";
+        public const string ToolVersion = "2.1";
         public static int Lang;
 
         static readonly Dictionary<string, string[]> texts = new Dictionary<string, string[]>

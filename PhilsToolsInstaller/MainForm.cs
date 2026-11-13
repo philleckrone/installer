@@ -46,6 +46,7 @@ namespace PhilsTools
         readonly Button btnGuide = new Button();
         readonly Button btnClose = new Button();
         readonly TextBox txtLog = new TextBox();
+        FlowLayoutPanel left, right;   // the button bar's two halves
 
         /// <param name="cmsDir">For tests: the only cms folder searched for old copies (null = every projects folder's).</param>
         public MainForm(Bundle bundle, string cmsDir)
@@ -205,10 +206,10 @@ namespace PhilsTools
             bar.ColumnCount = 2;
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             bar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            FlowLayoutPanel left = new FlowLayoutPanel();
+            left = new FlowLayoutPanel();
             left.AutoSize = true;
             left.WrapContents = false;
-            FlowLayoutPanel right = new FlowLayoutPanel();
+            right = new FlowLayoutPanel();
             right.AutoSize = true;
             right.WrapContents = false;
             right.Anchor = AnchorStyles.Right;
@@ -301,6 +302,7 @@ namespace PhilsTools
             foreach (ListViewItem it in lvPlugins.Items) it.Text = ((PluginItem)it.Tag).Name[Strings.Lang];
             SortPlugins();
             ShowPluginInfo();
+            FitButtons();
         }
 
         /// <summary>Puts the plugins in alphabetical order of their names in the window's language,
@@ -341,10 +343,26 @@ namespace PhilsTools
             lvPlugins.Columns[0].Width = Math.Max(150, w - ver - st - 4);
         }
 
+        /// <summary>Widens the window when the button bar does not fit (2.1: in Spanish and French
+        /// "User guide" was cut off or hidden), never beyond the screen's working area.</summary>
+        void FitButtons()
+        {
+            if (left == null || !IsHandleCreated) return;
+            int need = left.PreferredSize.Width + left.Margin.Horizontal + right.PreferredSize.Width + right.Margin.Horizontal
+                + Padding.Horizontal + 20 + 12;   // the root panel's padding (10 + 10), plus some room
+            int extra = need - ClientSize.Width;
+            if (extra <= 0) return;
+            Rectangle area = Screen.FromControl(this).WorkingArea;
+            int w = Math.Min(Width + extra, area.Width);
+            int x = Math.Max(area.Left, Math.Min(Left - (w - Width) / 2, area.Right - w));
+            SetBounds(x, Top, w, Height);
+        }
+
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             lvPlugins.Resize += delegate { SizeColumns(); };
+            FitButtons();
             SizeColumns();
         }
 

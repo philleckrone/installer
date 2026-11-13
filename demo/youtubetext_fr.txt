@@ -1,0 +1,21 @@
+﻿Install Phil's tools est un seul programme qui installe, met à jour et supprime tous les modules complémentaires de Paratext de Phil. Les vérifications CMS viennent avec le module Vérifications personnalisées (cms) de Phil. Téléchargez-le une fois, cochez les outils voulus et cliquez sur Installer. Il trouve chaque Paratext 9 de l'ordinateur et vérifie chaque fichier avant de l'installer.
+
+Téléchargez Install_Phils_tools.exe depuis le dossier Paratext Plugins :
+https://short.do/HgUb7T
+
+0:16 Où trouver le programme d'installation ?
+0:28 Comment le télécharger ?
+0:35 Google dit que le fichier peut être dangereux. Que faire ?
+0:44 Où l'enregistrer ?
+0:52 Windows dit avoir protégé l'ordinateur. Que faire ?
+1:15 Que montre le programme d'installation ?
+1:36 Comment savoir ce qui est installé ou à mettre à jour ?
+1:49 Où est le guide de l'utilisateur d'un outil ?
+2:05 Comment installer un module ?
+2:27 Où trouver les outils dans Paratext ?
+
+Créé avec Claude AI.
+Narration : voix générée par IA (Microsoft Azure AI Speech, voix « Rémy »).
+Music from Free To Use
+Source: https://freetouse.com/music
+Coconut Kind of Love by Aetheric

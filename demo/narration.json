@@ -164,17 +164,17 @@
       "en": {
         "title": "The installer opens",
         "q": "What does the installer show?",
-        "text": "The installer opens. {0}Choose your language here. {1}This line shows the Paratext 9 programs it found. {2}Below it, the Paratext plugins are listed in alphabetical order. The CMS checks now come with the Phils Custom (cms) Checks plugin."
+        "text": "The installer opens. {0}Choose your language here. {1}The green note: the CMS checks now come with the Phils Custom (cms) Checks plugin. {2}This line shows the Paratext 9 programs found. {3}Below it, the plugins are listed in alphabetical order."
       },
       "es": {
         "title": "Se abre el instalador",
         "q": "¿Qué muestra el instalador?",
-        "text": "Se abre el instalador. {0}Elija su idioma aquí. {1}Esta línea muestra los programas Paratext 9 que encontró. {2}Debajo aparecen los complementos de Paratext en orden alfabético. Las verificaciones CMS vienen ahora con el complemento Verificaciones personalizadas (cms) de Phil."
+        "text": "Se abre el instalador. {0}Elija su idioma aquí. {1}La nota verde: las verificaciones CMS vienen ahora con el complemento Verificaciones personalizadas (cms) de Phil. {2}Esta línea muestra los Paratext 9 encontrados. {3}Debajo, los complementos en orden alfabético."
       },
       "fr": {
         "title": "Le programme d'installation s'ouvre",
         "q": "Que montre le programme d'installation ?",
-        "text": "Le programme d'installation s'ouvre. {0}Choisissez votre langue ici. {1}Cette ligne montre les programmes Paratext 9 trouvés. {2}En dessous, les modules complémentaires de Paratext sont listés par ordre alphabétique. Les vérifications CMS viennent maintenant avec le module Vérifications personnalisées (cms) de Phil."
+        "text": "Le programme d'installation s'ouvre. {0}Choisissez votre langue ici. {1}La note verte : les vérifications CMS viennent maintenant avec le module Vérifications personnalisées (cms) de Phil. {2}Cette ligne montre les Paratext 9 trouvés. {3}En dessous, les modules par ordre alphabétique."
       }
     },
     {
@@ -196,21 +196,54 @@
       }
     },
     {
+      "id": "w2b_guide",
+      "en": {
+        "title": "Read about a tool",
+        "q": "Where is the user guide of a tool?",
+        "text": "{0}Select a tool in the list, {1}then click User guide."
+      },
+      "es": {
+        "title": "Lea sobre una herramienta",
+        "q": "¿Dónde está la guía del usuario de una herramienta?",
+        "text": "{0}Seleccione una herramienta en la lista {1}y haga clic en Guía del usuario."
+      },
+      "fr": {
+        "title": "Renseignez-vous sur un outil",
+        "q": "Où est le guide de l'utilisateur d'un outil ?",
+        "text": "{0}Sélectionnez un outil dans la liste, {1}puis cliquez sur Guide de l'utilisateur."
+      }
+    },
+    {
+      "id": "w2c_viewer",
+      "en": {
+        "title": "The user guide",
+        "text": "{0}The tool's guide opens in your language. You can read it before you install the tool. Close it to go back to the list."
+      },
+      "es": {
+        "title": "La guía del usuario",
+        "text": "{0}La guía de la herramienta se abre en su idioma. Puede leerla antes de instalar la herramienta. Ciérrela para volver a la lista."
+      },
+      "fr": {
+        "title": "Le guide de l'utilisateur",
+        "text": "{0}Le guide de l'outil s'ouvre dans votre langue. Vous pouvez le lire avant d'installer l'outil. Fermez-le pour revenir à la liste."
+      }
+    },
+    {
       "id": "w3_tick",
       "en": {
         "title": "Tick the tools you want",
         "q": "How do I install a plugin?",
-        "text": "{0}Tick the tools you want, for example Bulk Note Editing. {1}The box below describes the selected tool. {2}Then click Install / update ticked."
+        "text": "{0}Click anywhere on a row to tick the tools you want, for example Bulk Note Editing. {1}The box below describes the selected tool. {2}Then click Install / update ticked."
       },
       "es": {
         "title": "Marque las herramientas que desea",
         "q": "¿Cómo instalo un complemento?",
-        "text": "{0}Marque las herramientas que desea, por ejemplo Edición de notas en lote. {1}El cuadro de abajo describe la herramienta seleccionada. {2}Luego haga clic en Instalar / actualizar los marcados."
+        "text": "{0}Haga clic en cualquier parte de una fila para marcar las herramientas que desea, por ejemplo Edición de notas en lote. {1}El cuadro de abajo describe la herramienta seleccionada. {2}Luego haga clic en Instalar / actualizar los marcados."
       },
       "fr": {
         "title": "Cochez les outils voulus",
         "q": "Comment installer un module ?",
-        "text": "{0}Cochez les outils voulus, par exemple Modification de notes en lot. {1}Le cadre du bas décrit l'outil sélectionné. {2}Puis cliquez sur Installer / mettre à jour."
+        "text": "{0}Cliquez n'importe où sur une ligne pour cocher les outils voulus, par exemple Modification de notes en lot. {1}Le cadre du bas décrit l'outil sélectionné. {2}Puis cliquez sur Installer / mettre à jour."
       }
     },
     {
@@ -232,15 +265,15 @@
       "id": "w5_done",
       "en": {
         "title": "The tool is installed",
-        "text": "Windows may ask for permission to change Paratext's program folders. Click Yes. {1}The messages show each step. {0}When it is done, the status says Installed, and the tick is cleared."
+        "text": "{1}The messages show each step. {0}When it is done, the status says Installed, and the tick is cleared."
       },
       "es": {
         "title": "La herramienta está instalada",
-        "text": "Windows puede pedir permiso para cambiar las carpetas del programa Paratext. Haga clic en Sí. {1}Los mensajes muestran cada paso. {0}Al terminar, el estado dice Instalado y la marca se quita."
+        "text": "{1}Los mensajes muestran cada paso. {0}Al terminar, el estado dice Instalado y la marca se quita."
       },
       "fr": {
         "title": "L'outil est installé",
-        "text": "Windows peut demander l'autorisation de modifier les dossiers du programme Paratext. Cliquez sur Oui. {1}Les messages montrent chaque étape. {0}À la fin, l'état indique Installé et la case est décochée."
+        "text": "{1}Les messages montrent chaque étape. {0}À la fin, l'état indique Installé et la case est décochée."
       }
     },
     {

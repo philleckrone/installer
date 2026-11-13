@@ -107,6 +107,21 @@ public static class DmWin {
     /// <summary>Moves a window (no size change, no activation).</summary>
     public static void MoveTo(IntPtr h, int x, int y) { SetWindowPos(h, IntPtr.Zero, x, y, 0, 0, 0x0001 | 0x0004 | 0x0010); }
     [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+    delegate bool EnumProc(IntPtr h, IntPtr l);
+    [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc f, IntPtr l);
+    [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+    [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
+    /// <summary>A visible top-level window of the process other than its main window (the guide
+    /// viewer), or zero.</summary>
+    public static IntPtr OtherWindow(int pid, IntPtr main) {
+        IntPtr found = IntPtr.Zero;
+        EnumWindows(delegate(IntPtr h, IntPtr l) {
+            uint p; GetWindowThreadProcessId(h, out p);
+            if (p == pid && h != main && IsWindowVisible(h)) { found = h; return false; }
+            return true;
+        }, IntPtr.Zero);
+        return found;
+    }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     struct StartupInfo {
@@ -160,6 +175,7 @@ public static class InMsg {
     [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
     struct Pt { public int X, Y; }
 
+    public static void SetText(IntPtr h, string s) { SendMessage(h, 0x000C, IntPtr.Zero, new StringBuilder(s)); }
     public static string Text(IntPtr h) {
         int n = (int)SendMessage(h, 0x000E, IntPtr.Zero, IntPtr.Zero);
         StringBuilder sb = new StringBuilder(n + 1); SendMessage(h, 0x000D, (IntPtr)(n + 1), sb); return sb.ToString();
@@ -209,6 +225,14 @@ public static class InMsg {
     public static uint MonitorDpi(int x, int y) {
         Pt p = new Pt(); p.X = x; p.Y = y; uint dx, dy;
         GetDpiForMonitor(MonitorFromPoint(p, 2), 0, out dx, out dy); return dx;
+    }
+    /// <summary>Makes a list row the selected, focused row without ticking it.</summary>
+    public static void Select(IntPtr lv, int i) {
+        byte[] b = new byte[96];
+        BitConverter.GetBytes(0x0008).CopyTo(b, 0);
+        BitConverter.GetBytes(0x3).CopyTo(b, 12);
+        BitConverter.GetBytes(0x3).CopyTo(b, 16);
+        Remote(lv, 0x102B, (IntPtr)i, b);
     }
     public static bool Ticked(IntPtr lv, int i) { return (((int)SendMessage(lv, 0x102C, (IntPtr)i, (IntPtr)0xF000)) >> 12) == 2; }
     [DllImport("kernel32.dll")] static extern bool IsWow64Process(IntPtr p, out bool wow);
@@ -396,13 +420,34 @@ function WaitForLog {
 $langBox = @(Controls | Where-Object { $_.Class -like '*COMBOBOX*' } | Sort-Object { $_.Rect[1] })[0]
 $found = Ctl '*STATIC*' $foundText
 $heading = Ctl '*STATIC*' (T 'Paratext plugins' 'Complementos de Paratext' "Modules compl$([char]0xE9)mentaires de Paratext")
+$note = Ctl '*STATIC*' (T 'The CMS checks are now*' 'Las verificaciones CMS ahora*' "Les v$([char]0xE9)rifications CMS*")
 $lv = ListView
 $pluginRow = [InMsg]::FindRow($lv.H, $pluginName)
 if ($pluginRow -lt 0) { throw "no row named '$pluginName' in the window" }
-Step 'w1_window' @(@(, $langBox.Rect), @(, $found.Rect), @($heading.Rect, $lv.Rect)) -1
+# Boxes: 0 the language, 1 the green note, 2 the Paratext line, 3 the plugins.
+Step 'w1_window' @(@(, $langBox.Rect), @(, $note.Rect), @(, $found.Rect), @($heading.Rect, $lv.Rect)) -1
 
 # The Status column.
 Step 'w2_status' @(, (Column $lv 2)) -1
+
+# The user guide (1.5/1.6): the plugin's row selected (not ticked), the button, then the guide
+# in the installer's own viewer, in the window's language.
+Show $lv $pluginRow
+[InMsg]::Select($lv.H, $pluginRow)
+Start-Sleep -Milliseconds 600
+$guide = Ctl '*BUTTON*' (T 'User guide' "Gu$([char]0xED)a del usuario" "Guide de l'utilisateur")
+Step 'w2b_guide' @(@(, (Row $lv $pluginRow)), @(, $guide.Rect)) 1
+Click $guide.H
+$viewer = [IntPtr]::Zero
+for ($i = 0; $i -lt 50 -and $viewer -eq [IntPtr]::Zero; $i++) { Start-Sleep -Milliseconds 200; $viewer = [DmWin]::OtherWindow($script:proc.Id, $script:hwnd) }
+if ($viewer -eq [IntPtr]::Zero) { throw 'the user guide viewer did not open' }
+Start-Sleep -Milliseconds 2000
+$vf = [DmWin]::Frame($viewer)
+Step 'w2c_viewer' @(, @(, @($vf.L, $vf.T, ($vf.R - $vf.L), ($vf.B - $vf.T)))) -1
+[InMsg]::PostMessage($viewer, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero) | Out-Null   # WM_CLOSE
+Start-Sleep -Milliseconds 1000
+# The log now says "guide: C:\Users\<name>\...": cleared, so no user name shows in later pictures.
+[InMsg]::SetText((Edits)[-1].H, '')
 
 # The plugin ticked: its row, the description box, the Install button.
 Show $lv $pluginRow
@@ -459,7 +504,7 @@ $menuBoxes = @{
 }
 $menuShot = Join-Path (Split-Path (Split-Path $here)) "Bulk_Notes\demo\tools_menu_$Lang.png"
 $order0 = @('d1_folder', 'd2_download', 'd3_dangerous', 'd4_save', 'd5_warning', 'd6_runanyway',
-            'w1_window', 'w2_status', 'w3_tick', 'w4_uac', 'w5_done', 'w9_ready')
+            'w1_window', 'w2_status', 'w2b_guide', 'w2c_viewer', 'w3_tick', 'w4_uac', 'w5_done', 'w9_ready')
 $all = @()
 foreach ($id in $order0) {
     $cap = $script:steps | Where-Object { $_.Id -eq $id } | Select-Object -First 1
