@@ -6,12 +6,12 @@ namespace PhilsTools
     /// <summary>The installer's texts in English, Spanish and French (index 0, 1, 2).</summary>
     public static class Strings
     {
-        public const string ToolVersion = "1.7";
+        public const string ToolVersion = "1.8";
         public static int Lang;
 
         static readonly Dictionary<string, string[]> texts = new Dictionary<string, string[]>
         {
-            { "Caption", new[] { "Install Phil's tools for Paratext", "Instalar las herramientas de Phil para Paratext", "Installer les outils de Phil pour Paratext" } },
+            { "Caption", new[] { "Install Phil's Paratext tools", "Instalar las herramientas de Paratext de Phil", "Installer les outils Paratext de Phil" } },
             { "Title", new[] { "Phil's tools for Paratext", "Herramientas de Phil para Paratext", "Outils de Phil pour Paratext" } },
             { "Intro", new[] {
                 "Tick the tools you want, then click Install. Tools already installed can be updated or removed the same way.",

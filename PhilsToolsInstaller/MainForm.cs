@@ -280,7 +280,7 @@ namespace PhilsTools
 
         void ApplyTexts()
         {
-            Text = Strings.T("Caption") + " " + Strings.ToolVersion;
+            Text = Strings.T("Caption") + " (v. " + Strings.ToolVersion + ")";
             lblTitle.Text = Strings.T("Title");
             lblIntro.Text = Strings.T("Intro");
             lblNote.Text = Strings.T("CmsNote");
