@@ -1,0 +1,310 @@
+﻿==============================================================================
+ Instalar las herramientas de Paratext de Phil - Registro de cambios
+ Generado el 17 de noviembre de 2026
+==============================================================================
+
+Lo que cambió en Install_Phils_tools.exe y en cada complemento que instala, de
+lo más reciente a lo más antiguo. Se omiten las versiones sin cambios
+registrados.
+
+INSTALADOR (Install_Phils_tools.exe)
+------------------------------------
+2.3  (17 de noviembre de 2026)
+  * Lleva Verificaciones personalizadas (cms) de Phil 1.7.
+  * Este registro de cambios (Install_Phils_tools_ChangeLog_sp.txt) acompaña
+    ahora al instalador.
+2.2  (13 de noviembre de 2026)
+  * Lleva Verificaciones personalizadas (cms) de Phil 1.6 (todas las
+    verificaciones también en francés).
+2.1  (13 de noviembre de 2026)
+  * La ventana se ensancha sola para que quepan todos sus botones ("Guía del
+    usuario" se cortaba en español y francés).
+  * El instalador tiene su propia guía del usuario en inglés, español y
+    francés.
+2.0  (13 de noviembre de 2026)
+  * Instala los complementos por sí mismo, sin PowerShell. Windows Defender
+    había puesto en cuarentena la versión 1.9 como troyano porque iniciaba
+    PowerShell en segundo plano.
+  * Cuando hacen falta derechos de administrador, el aviso de Windows nombra
+    ahora a Install_Phils_tools.exe.
+1.9  (13 de noviembre de 2026)
+  * Lleva Editor de pasajes paralelos 1.3 (añadir sus propios pasajes).
+1.8  (13 de noviembre de 2026)
+  * Lleva Rasgos especiales 1.7.
+1.7  (12 de noviembre de 2026)
+  * Lleva Editor de autocorrección 1.1.
+1.6  (fecha no registrada)
+  * Las guías del usuario se abren en el visor propio del instalador, así que
+    se pueden leer sin Word ni WordPad (Windows 11 ya no tiene WordPad).
+1.5  (fecha no registrada)
+  * Nuevo botón "Guía del usuario": abre la guía del complemento elegido en el
+    idioma de la ventana.
+1.4  (fecha no registrada)
+  * Una nota arriba indica que las verificaciones CMS se instalan ahora como
+    Verificaciones personalizadas (cms) de Phil.
+  * Un clic en cualquier parte de una fila la marca o desmarca.
+1.3  (11 de noviembre de 2026)
+  * Se quitó la pestaña CMS: las verificaciones vienen ahora con el
+    complemento Verificaciones personalizadas (cms) de Phil.
+  * Los complementos aparecen en orden alfabético en el idioma de la ventana.
+  * Se pueden quitar las copias antiguas de las verificaciones en una carpeta
+    cms ("Quitar copias CMS antiguas...").
+  * Ya no se ofrece el lanzador de Project Checker.
+1.0  (9 de noviembre de 2026)
+  * Primera versión: un solo programa que instala, actualiza y quita todos los
+    complementos, e indica si cada uno está instalado o tiene una
+    actualización.
+
+
+COMPLEMENTOS (entre corchetes, la versión que lleva el instalador)
+------------------------------------------------------------------
+
+Edición de notas en lote (experimental)  [1.6]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.6  (7 de noviembre de 2026)
+    * Botón "Marcar como no leídas".
+    * Las notas que usted resuelve o asigna quedan marcadas como leídas.
+  1.5  (7 de noviembre de 2026)
+    * Botón "Marcar como leídas".
+  1.4  (7 de noviembre de 2026)
+    * Varios proyectos en una lista (botón Proyectos).
+    * Filtro y columna de leídas/no leídas; notas no leídas en negrita.
+  1.3  (4 de noviembre de 2026)
+    * Colores de fila para notas de conflicto, de Lista de palabras/Términos
+      bíblicos y resueltas.
+    * Botón "Ocultar filtros", con una línea que nombra los filtros activos.
+  1.2  (4 de noviembre de 2026)
+    * Filtro y columna de etiquetas, incluidas las notas de conflicto.
+  1.1  (fecha no registrada)
+    * Alcance de todo el proyecto.
+    * "Asignar a" lista solo a las personas todavía activas en el proyecto.
+  1.0  (3 de noviembre de 2026)
+    * Primera versión: lista las notas de un proyecto con filtros, y resuelve
+      o asigna las que usted marque.
+
+Editor de autocorrección  [1.1]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.1  (12 de noviembre de 2026)
+    * Corregido: al guardar se podía perder una entrada cuyo texto de búsqueda
+      tiene un carácter parecido al apóstrofo antes de "-->".
+  1.0  (1 de octubre de 2026)
+    * Primera versión: Herramientas > Editor de autocorrección... edita el
+      autocorrect.txt del proyecto.
+
+Editor de hoja de estilos personalizada  [1.0]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.0  (2 de octubre de 2026)
+    * Primera versión: Herramientas > Editor de hoja de estilos
+      personalizada... edita el custom.sty del proyecto.
+
+Editor de pasajes paralelos  [1.3]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.3  (13 de noviembre de 2026)
+    * Añadir, editar y quitar sus propios pasajes paralelos (Añadir pasaje...
+      / Editar pasaje... / Quitar pasaje). Se recuerdan y se ofrecen de nuevo
+      tras una actualización de Paratext.
+  1.2  (27 de octubre de 2026)
+    * Seguridad: la lista de ocultos por proyecto la escribe el complemento,
+      no el editor que se ejecuta como administrador.
+  1.1  (27 de octubre de 2026)
+    * Seguridad: el programa editor se instala en Program Files y se comprueba
+      antes de iniciarlo como administrador. Se retiró el lanzador del menú de
+      verificaciones.
+  1.0  (1 de octubre de 2026)
+    * Primera versión: Herramientas > Editor de pasajes paralelos... oculta
+      libros o capítulos en la lista de pasajes paralelos de Paratext, con una
+      lista por proyecto.
+
+Editor de versificación personalizada  [1.0]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.0  (1 de octubre de 2026)
+    * Primera versión: Herramientas > Editor de versificación personalizada...
+      edita el custom.vrs del proyecto.
+
+Enviar notas a un proyecto  [1.3]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.3  (10 de noviembre de 2026)
+    * Una nota sobre un rango de versículos (p. ej. HCH 1:13-14) conserva su
+      rango al enviarse.
+  1.2  (3 de noviembre de 2026)
+    * Opción "Solo el versículo": listar las notas de un versículo en vez del
+      capítulo.
+  1.1  (3 de noviembre de 2026)
+    * Volver a elegir el comando del menú actualiza la ventana abierta,
+      conservando las marcas.
+  1.0  (3 de noviembre de 2026)
+    * Primera versión: envía notas de un proyecto de notas del consultor al
+      proyecto, un capítulo a la vez, y las marca como enviadas.
+
+Espacios de marcadores  [1.3]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.3  (fecha no registrada)
+    * Cambios menores; no se registraron los detalles.
+  1.2  (23 de octubre de 2026)
+    * Interfaz y guía del usuario en francés.
+  1.1  (13 de octubre de 2026)
+    * Botón "Libros: n de m...": elegir qué libros se examinan (los libros
+      bíblicos por defecto).
+  1.0  (13 de octubre de 2026)
+    * Primera versión: lista los problemas de espacios junto a los marcadores,
+      una fila por problema, y corrige los que usted marque.
+
+Informe de la configuración del proyecto  [2.5]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  2.5  (fecha no registrada)
+    * Ya no se muestra el grupo "Otras configuraciones".
+  2.3  (fecha no registrada)
+    * Filas que indican si el proyecto tiene custom.sty, custom.vrs y
+      autocorrect.txt.
+  2.2  (fecha no registrada)
+    * Los caracteres de varios puntos de código se cuentan solo como
+      caracteres completos.
+  2.1  (30 de octubre de 2026)
+    * La puntuación usada en el texto se cuenta como la cuenta el inventario
+      de Paratext.
+  2.0  (30 de octubre de 2026)
+    * Muestra qué caracteres aprobados usa de verdad el texto, con cantidades,
+      además de los aprobados no usados y los desaprobados encontrados.
+  1.8  (fecha no registrada)
+    * El grupo Comillas va después de Puntuación.
+  1.7  (fecha no registrada)
+    * Nueva fila: caracteres válidos que no están en la configuración del
+      idioma.
+  1.6  (fecha no registrada)
+    * Sección de configuración del idioma (.ldml).
+  1.5  (fecha no registrada)
+    * Nuevo grupo Marcadores; configuraciones reagrupadas por tema.
+  1.4  (fecha no registrada)
+    * Las configuraciones vacías se ven con la casilla "Mostrar
+      configuraciones vacías".
+  1.3  (fecha no registrada)
+    * Los libros que faltan (Génesis a Apocalipsis) se muestran bajo
+      BooksPresent.
+  1.0  (29 de octubre de 2026)
+    * Primera versión: la configuración del proyecto como página web, agrupada
+      por tema, con descripciones.
+
+Marcadores numerados  [1.7]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.7  (fecha no registrada)
+    * Cambios menores; no se registraron los detalles.
+  1.6  (23 de octubre de 2026)
+    * Botón "Libros: n de m...": elegir qué libros se examinan (todos por
+      defecto).
+  1.5  (23 de octubre de 2026)
+    * Interfaz y guía del usuario en francés.
+  1.3  (12 de octubre de 2026)
+    * Se exige un punto de historial antes de cambiar nada; sin él no se
+      cambia nada.
+    * Filas opcionales para marcadores que usan una sola forma.
+  1.2  (12 de octubre de 2026)
+    * Columna "Cambiar a": un marcador también puede perder su 1 (\X1 -> \X).
+  1.1  (12 de octubre de 2026)
+    * El título de la ventana muestra la versión.
+  1.0  (12 de octubre de 2026)
+    * Primera versión: encuentra marcadores usados con y sin número (\mt junto
+      a \mt1) y los unifica.
+
+Rasgos especiales  [1.7]
+~~~~~~~~~~~~~~~~~~~~~~~~
+  1.7  (13 de noviembre de 2026)
+    * Selector "Tipos: n de m...": dejar fuera varios tipos (p. ej. Divisiones
+      menores).
+    * Ocultar los lugares ya tratados en este proyecto (Ocultar seleccionados
+      / Mostrar lugares ocultos).
+  1.5  (23 de octubre de 2026)
+    * Interfaz, descripciones y guía del usuario en francés.
+  1.4  (23 de octubre de 2026)
+    * Estado azul "Solo comillas" para inscripciones y citas del AT marcadas
+      con comillas.
+  1.3  (22 de octubre de 2026)
+    * Citas del Antiguo Testamento como tipo propio, con su casilla "Citas del
+      AT".
+  1.2  (22 de octubre de 2026)
+    * Nuevo orden de columnas, empezando por Estado y Referencia.
+  1.1  (22 de octubre de 2026)
+    * Lugares añadidos: su propia lista de lugares, común a todos los
+      proyectos, con Exportar/Importar.
+    * Se quitó el resaltado del menú Ver.
+  1.0  (fecha no registrada)
+    * Primera versión: lista los lugares donde las Biblias publicadas suelen
+      usar un formato especial, con su estado en el proyecto.
+
+Style Guide (Guía de estilo)  [1.16]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.16  (fecha no registrada)
+    * Botón "Libros: n de m...": elegir qué libros se examinan (por ejemplo
+      solo el NT).
+  1.15  (fecha no registrada)
+    * Los términos clave griegos se emparejan bien con sus traducciones.
+  1.14  (fecha no registrada)
+    * Los nombres dados solo por género se muestran con su nombre en la NIV,
+      p. ej. "Absalom (M)".
+  1.13  (fecha no registrada)
+    * Tres módulos en borrador: Cartas-Proclamaciones, Marcado y diagramación,
+      Consideraciones de traducción (con las traducciones de Términos bíblicos
+      del proyecto).
+  1.12  (fecha no registrada)
+    * El estudio de cada módulo se hace solo cuando se muestra el módulo; la
+      letra de la ventana es más grande.
+  1.11  (fecha no registrada)
+    * Nuevo módulo: Sintaxis, gramática, ortografía.
+  1.10  (fecha no registrada)
+    * Nuevo módulo: Citas.
+  1.9  (3 de noviembre de 2026)
+    * Nuevo módulo: Poesía.
+  1.8  (2 de noviembre de 2026)
+    * Nuevo módulo: Números, pesos, medidas, tiempo.
+  1.7  (2 de noviembre de 2026)
+    * Nuevo módulo: Listas.
+  1.6  (2 de noviembre de 2026)
+    * La línea de estado pasó a la barra superior.
+  1.5  (2 de noviembre de 2026)
+    * Nuevo módulo: División de palabras (de hyphenatedWords.txt).
+  1.4  (2 de noviembre de 2026)
+    * Nuevo módulo: Encabezados.
+  1.3  (2 de noviembre de 2026)
+    * Las respuestas sugeridas tienen una oración por línea.
+  1.2  (2 de noviembre de 2026)
+    * Nuevo módulo: Notas al pie.
+  1.1  (2 de noviembre de 2026)
+    * El cuadro de respuesta "Nuestro proyecto" pasó encima de los hallazgos.
+  1.0  (2 de noviembre de 2026)
+    * Primera versión: llena el módulo de Puntuación de la guía de estilo de
+      Biblica a partir del texto del proyecto, y lo exporta como archivo de
+      Word.
+
+Títulos de libros numerados  [1.1]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.1  (23 de octubre de 2026)
+    * Interfaz y guía del usuario en francés.
+  1.0  (19 de octubre de 2026)
+    * Primera versión: encuentra los libros numerados (1 Samuel, 2 Reyes...)
+      cuyos títulos siguen otro estilo, y cambia las líneas que usted marque.
+
+Verificaciones personalizadas (cms) de Phil  [1.7]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.7  (17 de noviembre de 2026)
+    * "Libro actual" en la ventana de una verificación muestra ahora el libro
+      abierto en Paratext (siempre mostraba Génesis).
+  1.6  (13 de noviembre de 2026)
+    * Todas las verificaciones están en inglés, español y francés, con ayuda
+      en el mismo idioma.
+  1.5  (fecha no registrada)
+    * Los archivos de ayuda se abren en un visor propio (Windows 11 ya no
+      tiene WordPad), también desde la ventana de verificación de Paratext.
+  1.4  (fecha no registrada)
+    * Una verificación en español o francés sin ayuda propia muestra la ayuda
+      en inglés.
+  1.3  (11 de noviembre de 2026)
+    * Corregido: algunas verificaciones se detenían con "Not found:
+      ...\cms\<script>.py".
+    * Las verificaciones aparecen en orden alfabético.
+  1.2  (11 de noviembre de 2026)
+    * Nuevo nombre: Verificaciones personalizadas (cms) de Phil (también en
+      inglés y francés).
+  1.1  (11 de noviembre de 2026)
+    * Corregido: en Paratext ninguna verificación llegaba a ejecutarse.
+  1.0  (11 de noviembre de 2026)
+    * Primera versión: lista las verificaciones que lleva y las ejecuta con la
+      ventana de verificación de Paratext, sin copiarlas a la carpeta cms.

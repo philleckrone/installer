@@ -1,0 +1,296 @@
+﻿==============================================================================
+ Install Phil's Paratext tools - Change log
+ Generated November 17, 2026
+==============================================================================
+
+What changed in Install_Phils_tools.exe and in each plugin it installs, newest
+first. Versions with no recorded changes are left out.
+
+INSTALLER (Install_Phils_tools.exe)
+-----------------------------------
+2.3  (November 17, 2026)
+  * Carries Phils Custom (cms) Checks 1.7.
+  * This change log (Install_Phils_tools_ChangeLog.txt) now comes with the
+    installer.
+2.2  (November 13, 2026)
+  * Carries Phils Custom (cms) Checks 1.6 (all checks in French too).
+2.1  (November 13, 2026)
+  * The window widens itself so that all its buttons fit ("User guide" was cut
+    off in Spanish and French).
+  * The installer has its own user guide in English, Spanish and French.
+2.0  (November 13, 2026)
+  * Installs the plugins by itself, without PowerShell. Windows Defender had
+    quarantined version 1.9 as a Trojan because it started PowerShell in the
+    background.
+  * When administrator rights are needed, the Windows prompt now names
+    Install_Phils_tools.exe.
+1.9  (November 13, 2026)
+  * Carries Parallel Passages Editor 1.3 (adding your own passages).
+1.8  (November 13, 2026)
+  * Carries Special Features 1.7.
+1.7  (November 12, 2026)
+  * Carries AutoCorrect Editor 1.1.
+1.6  (date not recorded)
+  * User guides open in the installer's own viewer, so they can be read
+    without Word or WordPad (Windows 11 no longer has WordPad).
+1.5  (date not recorded)
+  * New "User guide" button: opens the selected plugin's guide in the window's
+    language.
+1.4  (date not recorded)
+  * A note at the top says that the CMS checks are now installed as Phils
+    Custom (cms) Checks.
+  * A click anywhere on a row ticks or unticks it.
+1.3  (November 11, 2026)
+  * The CMS tab was removed: the checks now come with the Phils Custom (cms)
+    Checks plugin.
+  * The plugins are listed in alphabetical order in the window's language.
+  * Old copies of the checks in a cms folder can be removed ("Remove old CMS
+    copies...").
+  * Project Checker's launcher is no longer offered.
+1.0  (November 9, 2026)
+  * First version: one program that installs, updates and removes all the
+    plugins, and shows whether each one is installed or has an update.
+
+
+PLUGINS (the version the installer carries is in brackets)
+----------------------------------------------------------
+
+AutoCorrect Editor  [1.1]
+~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.1  (November 12, 2026)
+    * Fixed: saving could drop an entry whose search text has an
+      apostrophe-like character before "-->".
+  1.0  (October 1, 2026)
+    * First version: Tools > AutoCorrect Editor... edits the project's
+      autocorrect.txt.
+
+Bulk Note Editing (experimental)  [1.6]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.6  (November 7, 2026)
+    * "Mark ticked as unread" button.
+    * Notes you resolve or assign are marked as read.
+  1.5  (November 7, 2026)
+    * "Mark ticked as read" button.
+  1.4  (November 7, 2026)
+    * Several projects in one list (Projects button).
+    * Read/unread filter and column; unread notes in bold.
+  1.3  (November 4, 2026)
+    * Row colours for conflict, Wordlist/Biblical Terms and resolved notes.
+    * "Hide filters" button, with a line naming the filters in effect.
+  1.2  (November 4, 2026)
+    * Tag filter and Tags column, including conflict notes.
+  1.1  (date not recorded)
+    * Whole-project scope.
+    * "Assign to" lists only people still active in the project.
+  1.0  (November 3, 2026)
+    * First version: lists a project's notes with filters, and resolves or
+      assigns the ones you tick.
+
+Custom Stylesheet Editor  [1.0]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.0  (October 2, 2026)
+    * First version: Tools > Custom Stylesheet Editor... edits the project's
+      custom.sty.
+
+Custom Versification Editor  [1.0]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.0  (October 1, 2026)
+    * First version: Tools > Custom Versification Editor... edits the
+      project's custom.vrs.
+
+Marker Spaces  [1.3]
+~~~~~~~~~~~~~~~~~~~~
+  1.3  (date not recorded)
+    * Smaller changes; details were not recorded.
+  1.2  (October 23, 2026)
+    * French interface and user guide.
+  1.1  (October 13, 2026)
+    * "Books: n of m..." button: choose which books are examined (Bible books
+      by default).
+  1.0  (October 13, 2026)
+    * First version: lists spacing problems around markers, one row per
+      problem, and fixes the ones you tick.
+
+Numbered Book Titles  [1.1]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.1  (October 23, 2026)
+    * French interface and user guide.
+  1.0  (October 19, 2026)
+    * First version: finds numbered books (1 Samuel, 2 Kings...) whose titles
+      are written in a different style, and changes the lines you tick.
+
+Numbered Markers  [1.7]
+~~~~~~~~~~~~~~~~~~~~~~~
+  1.7  (date not recorded)
+    * Smaller changes; details were not recorded.
+  1.6  (October 23, 2026)
+    * "Books: n of m..." button: choose which books are examined (all by
+      default).
+  1.5  (October 23, 2026)
+    * French interface and user guide.
+  1.3  (October 12, 2026)
+    * A history point is required before anything is changed; without it
+      nothing changes.
+    * Optional rows for markers that use only one form.
+  1.2  (October 12, 2026)
+    * "Change to" column: a marker can also lose its 1 (\X1 -> \X).
+  1.1  (October 12, 2026)
+    * The window title shows the version.
+  1.0  (October 12, 2026)
+    * First version: finds markers used both with and without a number (\mt
+      beside \mt1) and makes them consistent.
+
+Parallel Passages Editor  [1.3]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.3  (November 13, 2026)
+    * Add, edit and remove your own parallel passages (Add passage... / Edit
+      passage... / Remove passage). They are remembered and offered again
+      after a Paratext update.
+  1.2  (October 27, 2026)
+    * Security: the per-project hidden list is written by the plugin, not by
+      the editor running as administrator.
+  1.1  (October 27, 2026)
+    * Security: the editor program is installed in Program Files and checked
+      before it is started as administrator. The Checks-menu launcher was
+      retired.
+  1.0  (October 1, 2026)
+    * First version: Tools > Parallel Passages Editor... hides books or
+      chapters in Paratext's parallel passages list, with a per-project list.
+
+Phils Custom (cms) Checks  [1.7]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.7  (November 17, 2026)
+    * "Current Book" in a check's window now shows the book open in Paratext
+      (it always showed Genesis).
+  1.6  (November 13, 2026)
+    * Every check is available in English, Spanish and French, with help in
+      the same language.
+  1.5  (date not recorded)
+    * Help files open in a built-in viewer (Windows 11 no longer has WordPad),
+      also from Paratext's own check window.
+  1.4  (date not recorded)
+    * A Spanish or French check without its own help shows the English help.
+  1.3  (November 11, 2026)
+    * Fixed: some checks stopped with "Not found: ...\cms\<script>.py".
+    * The checks are listed in alphabetical order.
+  1.2  (November 11, 2026)
+    * New name: Phils Custom (cms) Checks (Spanish and French names too).
+  1.1  (November 11, 2026)
+    * Fixed: in Paratext every check failed to start.
+  1.0  (November 11, 2026)
+    * First version: lists the custom checks it carries and runs them through
+      Paratext's own check window, without copying them into the cms folder.
+
+Project Settings Report  [2.5]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  2.5  (date not recorded)
+    * The "Other settings" group is no longer shown.
+  2.3  (date not recorded)
+    * Rows saying whether the project has custom.sty, custom.vrs and
+      autocorrect.txt.
+  2.2  (date not recorded)
+    * Characters made of several code points are counted only as whole
+      characters.
+  2.1  (October 30, 2026)
+    * Punctuation used in the text is counted the way Paratext's inventory
+      counts it.
+  2.0  (October 30, 2026)
+    * Shows which approved characters the text really uses, with counts, plus
+      approved characters not used and disapproved characters found.
+  1.8  (date not recorded)
+    * The Quotation marks group comes after Punctuation.
+  1.7  (date not recorded)
+    * New row: valid characters not in the language settings.
+  1.6  (date not recorded)
+    * Language settings (.ldml) section.
+  1.5  (date not recorded)
+    * New Markers group; settings regrouped by topic.
+  1.4  (date not recorded)
+    * Empty settings are shown with the "Show empty settings" tick box.
+  1.3  (date not recorded)
+    * Missing books (Genesis to Revelation) are shown under BooksPresent.
+  1.0  (October 29, 2026)
+    * First version: the project's settings as a web page, grouped by topic,
+      with descriptions.
+
+Send Notes to Project  [1.3]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.3  (November 10, 2026)
+    * A note on a range of verses (e.g. ACT 1:13-14) keeps its range when
+      sent.
+  1.2  (November 3, 2026)
+    * "Only verse" option: list the notes of one verse instead of the chapter.
+  1.1  (November 3, 2026)
+    * Choosing the menu command again refreshes the open window, keeping your
+      ticks.
+  1.0  (November 3, 2026)
+    * First version: sends notes from a consultant notes project to the
+      project, one chapter at a time, and marks them as sent.
+
+Special Features  [1.7]
+~~~~~~~~~~~~~~~~~~~~~~~
+  1.7  (November 13, 2026)
+    * "Kinds: n of m..." chooser: leave out several kinds (e.g. Minor
+      divisions).
+    * Hide places you have dealt with in this project (Hide selected / Show
+      hidden places).
+  1.5  (October 23, 2026)
+    * French interface, descriptions and user guide.
+  1.4  (October 23, 2026)
+    * Blue "Quotation marks only" status for inscriptions and OT quotations
+      set off by quotation marks.
+  1.3  (October 22, 2026)
+    * Old Testament quotations as a built-in kind, with their own "OT
+      quotations" tick box.
+  1.2  (October 22, 2026)
+    * New column order, starting with Status and Reference.
+  1.1  (October 22, 2026)
+    * Added places: your own list of places, shared by all projects, with
+      Export/Import.
+    * The View-menu highlighting was removed.
+  1.0  (date not recorded)
+    * First version: lists places where published Bibles often use special
+      formatting, with their status in the project.
+
+Style Guide  [1.16]
+~~~~~~~~~~~~~~~~~~~
+  1.16  (date not recorded)
+    * "Books: n of m..." button: choose which books are surveyed (for example
+      only the NT).
+  1.15  (date not recorded)
+    * Greek key terms are matched correctly with their renderings.
+  1.14  (date not recorded)
+    * Names given only by gender are shown with their NIV name, e.g. "Absalom
+      (M)".
+  1.13  (date not recorded)
+    * Three draft modules: Letters-Proclamations, Markup and Layout,
+      Translation Considerations (using the project's Biblical Terms
+      renderings).
+  1.12  (date not recorded)
+    * Each module's survey runs only when the module is first shown; the
+      window font is larger.
+  1.11  (date not recorded)
+    * New module: Syntax, Grammar, Spelling.
+  1.10  (date not recorded)
+    * New module: Quotations.
+  1.9  (November 3, 2026)
+    * New module: Poetry.
+  1.8  (November 2, 2026)
+    * New module: Numbers, Weights, Measures, Time.
+  1.7  (November 2, 2026)
+    * New module: Lists.
+  1.6  (November 2, 2026)
+    * The status line moved to the top bar.
+  1.5  (November 2, 2026)
+    * New module: Hyphenation (from hyphenatedWords.txt).
+  1.4  (November 2, 2026)
+    * New module: Headings.
+  1.3  (November 2, 2026)
+    * Suggested answers have one sentence per line.
+  1.2  (November 2, 2026)
+    * New module: Footnotes.
+  1.1  (November 2, 2026)
+    * "Our project" answer box moved above the findings.
+  1.0  (November 2, 2026)
+    * First version: fills in Biblica's Punctuation style-guide module from
+      the project's text, and exports it as a Word file.
