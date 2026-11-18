@@ -37,31 +37,107 @@ namespace PhilsTools
     /// </summary>
     public static class PluginInstaller
     {
-        /// <summary>Installs or removes the plugin from the normal window. Returns 0 when all went well.</summary>
-        public static int Run(Bundle bundle, PluginItem p, bool uninstall, Action<string> log)
+        /// <summary>Installs or removes several plugins, asking Windows for administrator rights at most
+        /// ONCE for all of them (2.6; before, a Paratext 9 Beta gave one prompt per plugin):
+        /// 1. each plugin's shared folders are done here, and the plugins that also need folders only
+        ///    administrators can change are noted;
+        /// 2. one copy of this program as administrator does those folders for all the noted plugins;
+        /// 3. each noted plugin is checked here (checksums and load check, or that its files are gone).
+        /// Logs "Installing X..." before each plugin. Calls <paramref name="failed"/> for each plugin
+        /// with a problem and returns how many had one.</summary>
+        public static int RunAll(Bundle bundle, IList<PluginItem> plugins, bool uninstall, Action<string> log, Action<PluginItem> failed)
         {
-            return new Job(bundle, p, uninstall, false, log).Run();
+            int problems = 0;
+            Action<Job, int> result = delegate(Job j, int code)
+            {
+                if (code == 0) return;
+                problems++;
+                if (failed != null) failed(j.Plugin);
+            };
+            List<Job> pending = new List<Job>();
+            foreach (PluginItem p in plugins)
+            {
+                log("");
+                log(Strings.F(uninstall ? "Removing" : "Installing", p.Name[Strings.Lang]));
+                Job job = new Job(bundle, p, uninstall, false, log);
+                int code = job.Begin();
+                if (code == Job.Pending) pending.Add(job);
+                else result(job, code);
+            }
+            if (pending.Count == 0) return problems;
+
+            List<string> keys = new List<string>(), names = new List<string>();
+            foreach (Job j in pending) { keys.Add(j.Plugin.Key); names.Add(j.Plugin.Name[Strings.Lang]); }
+            log("");
+            log("Asking Windows once for administrator rights, for: " + string.Join(", ", names.ToArray()));
+            bool denied = false;
+            try
+            {
+                int exit = RunAsAdministrator(keys, uninstall);
+                if (exit != 0) log("  The administrator step reported a problem (see its message); each plugin is checked below.");
+                else log("  The administrator step finished.");
+            }
+            catch (Win32Exception) { denied = true; }
+            catch (Exception ex) { log("  " + ex.Message); denied = true; }
+            foreach (Job j in pending)
+            {
+                log("");
+                log(j.Plugin.Name[Strings.Lang] + ":");
+                result(j, j.Finish(denied));
+            }
+            return problems;
         }
 
-        /// <summary>The administrator step (Install_Phils_tools.exe --elevated install|remove KEY): only
-        /// the folders that ordinary users cannot change. Problems are shown in a message box, since this
-        /// process has no window of its own.</summary>
-        public static int RunElevated(Bundle bundle, string verb, string key)
+        /// <summary>The administrator step (Install_Phils_tools.exe --elevated install|remove KEY...):
+        /// only the folders that ordinary users cannot change, for each plugin in turn. Problems are
+        /// shown in one message box at the end, since this process has no window of its own.</summary>
+        public static int RunElevated(Bundle bundle, string verb, IList<string> keys)
         {
             StringBuilder messages = new StringBuilder();
             Action<string> log = delegate(string s) { messages.AppendLine(s); };
-            int code;
-            PluginItem p = bundle.FindPlugin(key);
-            if (p == null || (verb != "install" && verb != "remove"))
+            int code = 0;
+            if (verb != "install" && verb != "remove")
             {
-                log("Unknown request: " + verb + " " + key);
+                log("Unknown request: " + verb);
                 code = 2;
             }
-            else code = new Job(bundle, p, verb == "remove", true, log).Run();
+            else
+            {
+                foreach (string key in keys)
+                {
+                    PluginItem p = bundle.FindPlugin(key);
+                    if (p == null) { log("Unknown plugin: " + key); code = 2; continue; }
+                    StringBuilder own = new StringBuilder();
+                    int c = new Job(bundle, p, verb == "remove", true, delegate(string s) { own.AppendLine(s); }).Begin();
+                    if (c != 0)
+                    {
+                        log(p.Name[Strings.Lang] + ":");
+                        log(own.ToString());
+                        if (code == 0) code = 1;
+                    }
+                }
+            }
             if (code != 0)
                 System.Windows.Forms.MessageBox.Show(messages.ToString(), Strings.T("Caption"),
                     System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
             return code;
+        }
+
+        /// <summary>Starts this program as administrator for the given plugins and waits for it. Throws
+        /// Win32Exception when the user says No to Windows' prompt. Returns its exit code.</summary>
+        static int RunAsAdministrator(IList<string> keys, bool uninstall)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo(ExePath(),
+                "--elevated " + (uninstall ? "remove" : "install") + " " + string.Join(" ", new List<string>(keys).ToArray()) +
+                " --lang " + new[] { "en", "es", "fr" }[Strings.Lang]);
+            psi.Verb = "runas";
+            psi.UseShellExecute = true;
+            psi.WorkingDirectory = Path.GetDirectoryName(ExePath());
+            using (Process proc = Process.Start(psi))
+            {
+                proc.WaitForExit();
+                return proc.ExitCode;
+            }
         }
 
         // -- One install or removal ------------------------------------------------------------
@@ -77,8 +153,13 @@ namespace PhilsTools
             readonly List<string> packageFiles = new List<string>();  // plugin file + any exe
             readonly Dictionary<string, BundleFile> files = new Dictionary<string, BundleFile>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, byte[]> bytes;
-            List<string> installs;
+            List<string> installs, adminOnly;
             string protectedExeDir;
+
+            /// <summary>Begin's answer when the plugin still needs the administrator step.</summary>
+            public const int Pending = -1;
+
+            public PluginItem Plugin { get { return p; } }
 
             public Job(Bundle bundle, PluginItem p, bool uninstall, bool elevated, Action<string> log)
             {
@@ -106,7 +187,10 @@ namespace PhilsTools
                 }
             }
 
-            public int Run()
+            /// <summary>Everything up to the administrator step. Returns 0 (done), 1 (failed) or Pending:
+            /// the shared folders are done and RunAll must start the administrator step, then Finish.
+            /// In the elevated process this is the whole administrator step.</summary>
+            public int Begin()
             {
                 try
                 {
@@ -119,7 +203,8 @@ namespace PhilsTools
                         protectedExeDir = useGivenFolders
                             ? Path.Combine(Path.Combine(Path.GetDirectoryName(installs[0]), "ProgramFiles"), p.Folder)
                             : Path.Combine(ProgramFilesFolder(), p.Folder);
-                    List<string> shared = new List<string>(), adminOnly = new List<string>();
+                    List<string> shared = new List<string>();
+                    adminOnly = new List<string>();
                     foreach (string i in installs) (IsSharedPluginsFolder(i) ? shared : adminOnly).Add(i);
                     if (!elevated)
                     {
@@ -183,17 +268,48 @@ namespace PhilsTools
                     AssertNotMappedDrive();
                     // 1. This (normal) process: the shared plugins folders.
                     if (uninstall) RemovePluginFiles(shared); else InstallPluginFiles(shared);
-                    // 2. A copy of this program as administrator: the folders only administrators can change.
-                    log("  Administrator rights are needed for folders that only administrators can change. Asking Windows...");
-                    RunAsAdministrator();
-                    log("  The administrator step finished.");
-                    // 3. Here again: checksums of what is installed, then the load check.
-                    if (uninstall)
+                    // 2. A copy of this program as administrator (started once by RunAll for all plugins).
+                    log("  Administrator rights are needed for folders that only administrators can change.");
+                    return Pending;
+                }
+                catch (Exception ex)
+                {
+                    log("  " + ex.Message);
+                    return 1;
+                }
+            }
+
+            /// <summary>3. After the administrator step, here again: for an install, the checksums of what
+            /// is installed and the load check; for a removal, that the files are gone.
+            /// <paramref name="denied"/>: the user said No to Windows' prompt.</summary>
+            public int Finish(bool denied)
+            {
+                try
+                {
+                    if (denied)
                     {
-                        log("  Removed from " + installs.Count + " Paratext installation(s).");
-                        return 0;
+                        log(uninstall
+                            ? "  Administrator permission was not given: the plugin was removed from the shared plugins folder(s), but not from the folders that only administrators can change. Remove it again."
+                            : "  Administrator permission was not given: the plugin is not completely installed. Install it again.");
+                        return 1;
                     }
-                    return CompleteInstall();
+                    if (!uninstall) return CompleteInstall();
+                    List<string> left = new List<string>();
+                    foreach (string i in adminOnly)
+                        foreach (string f in folderFiles)
+                        {
+                            string path = Path.Combine(Path.Combine(Path.Combine(i, "plugins"), p.Folder), f);
+                            if (File.Exists(path)) left.Add(path);
+                        }
+                    if (p.ExeProtected && File.Exists(Path.Combine(protectedExeDir, p.ExeFile)))
+                        left.Add(Path.Combine(protectedExeDir, p.ExeFile));
+                    if (left.Count > 0)
+                    {
+                        foreach (string f in left) log("  Still there: " + f);
+                        return 1;
+                    }
+                    log("  Removed from " + installs.Count + " Paratext installation(s).");
+                    return 0;
                 }
                 catch (Exception ex)
                 {
@@ -399,30 +515,6 @@ namespace PhilsTools
                     }
                 }
                 catch (Exception ex) { log("  Could not update Paratext's plugin list: " + ex.Message); }
-            }
-
-            // -- The administrator step ----------------------------------------------------------------
-
-            void RunAsAdministrator()
-            {
-                ProcessStartInfo psi = new ProcessStartInfo(ExePath(),
-                    "--elevated " + (uninstall ? "remove" : "install") + " " + p.Key + " --lang " + new[] { "en", "es", "fr" }[Strings.Lang]);
-                psi.Verb = "runas";
-                psi.UseShellExecute = true;
-                psi.WorkingDirectory = Path.GetDirectoryName(ExePath());
-                Process proc;
-                try { proc = Process.Start(psi); }
-                catch (Win32Exception)
-                {
-                    if (uninstall) throw new InvalidOperationException("Administrator permission was not given: the plugin was removed from the shared plugins folder(s), but not from the folders that only administrators can change. Remove it again.");
-                    throw new InvalidOperationException("Administrator permission was not given: the plugin is not completely installed. Install it again.");
-                }
-                using (proc)
-                {
-                    proc.WaitForExit();
-                    if (proc.ExitCode != 0)
-                        throw new InvalidOperationException("The administrator step reported a problem (see its message); the plugin may not be completely installed or removed.");
-                }
             }
 
             // -- After the files are in place: checksums and the load check ----------------------------

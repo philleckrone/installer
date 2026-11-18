@@ -9,6 +9,10 @@ notées sont omises.
 
 PROGRAMME D'INSTALLATION (Install_Phils_tools.exe)
 --------------------------------------------------
+2.6  (18 novembre 2026)
+  * Windows demande l'autorisation d'administrateur au plus une fois pour tous
+    les modules cochés, au lieu d'une fois par module (par exemple quand
+    Paratext 9 Beta est installé).
 2.5  (18 novembre 2026)
   * Plus petit : le programme d'installation ne contient plus de copies des
     anciennes vérifications CMS, qu'il n'installe plus depuis la 1.3.

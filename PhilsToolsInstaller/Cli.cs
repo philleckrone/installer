@@ -77,13 +77,13 @@ namespace PhilsTools
             bool remove = verb == "remove";
             int errors = 0;
             List<CmsItem> cmsItems = new List<CmsItem>();
+            List<PluginItem> plugins = new List<PluginItem>();
             foreach (string id in ids)
             {
                 PluginItem p = bundle.FindPlugin(id);
                 if (p != null)
                 {
-                    log(Strings.F(remove ? "Removing" : "Installing", p.Name[Strings.Lang]));
-                    if (PluginInstaller.Run(bundle, p, remove, log) != 0) errors++;
+                    plugins.Add(p);
                     continue;
                 }
                 CmsItem c = bundle.FindCms(id);
@@ -91,6 +91,8 @@ namespace PhilsTools
                 if (!remove) { Console.Error.WriteLine("CMS tools are no longer installed (they come with Phils Custom (cms) Checks): " + id); errors++; continue; }
                 cmsItems.Add(c);
             }
+            // All plugins together: one Windows prompt at most.
+            if (plugins.Count > 0) errors += PluginInstaller.RunAll(bundle, plugins, remove, log, null);
             if (cmsItems.Count > 0)
             {
                 if (cmsDir == null || !Directory.Exists(cmsDir)) { Console.Error.WriteLine("No cms folder: " + cmsDir); return 1; }

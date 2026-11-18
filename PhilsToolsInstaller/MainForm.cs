@@ -594,15 +594,9 @@ namespace PhilsTools
                     else
                     {
                         if (!remove) Log(Strings.T("UacNote"));
-                        foreach (PluginItem p in plugins)
-                        {
-                            Log("");
-                            Log(Strings.F(remove ? "Removing" : "Installing", p.Name[Strings.Lang]));
-                            int code;
-                            try { code = PluginInstaller.Run(bundle, p, remove, Log); }
-                            catch (Exception ex) { Log("  " + ex.Message); code = 1; }
-                            if (code != 0) { problems++; Log(Strings.F("ScriptFailed", p.Name[Strings.Lang])); }
-                        }
+                        // One Windows prompt at most, for all the plugins that need administrator rights.
+                        problems += PluginInstaller.RunAll(bundle, plugins, remove, Log,
+                            delegate(PluginItem p) { Log(Strings.F("ScriptFailed", p.Name[Strings.Lang])); });
                     }
                 }
                 catch (Exception ex)

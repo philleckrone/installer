@@ -14,7 +14,8 @@ namespace PhilsTools
         /// administrator rights (honoured only when not running as administrator).
         /// Started by the program itself (PluginInstaller), never by hand:
         /// --loadcheck PLUGIN PARATEXT (both base64): loads a private copy of a plugin as Paratext does.
-        /// --elevated install|remove KEY [--lang L]: the administrator step of an install or removal.
+        /// --elevated install|remove KEY... [--lang L]: the administrator step of an install or removal,
+        /// for all the plugins that need it (one Windows prompt).
         /// </summary>
         [STAThread]
         static int Main(string[] args)
@@ -48,8 +49,8 @@ namespace PhilsTools
             }
             if (elevated != null)
             {
-                if (ids.Count != 1 || !string.IsNullOrEmpty(ParatextPaths.TestInstalls)) return 2;
-                return PluginInstaller.RunElevated(bundle, elevated, ids[0]);
+                if (ids.Count == 0 || !string.IsNullOrEmpty(ParatextPaths.TestInstalls)) return 2;
+                return PluginInstaller.RunElevated(bundle, elevated, ids);
             }
             if (cli != null) return Cli.Run(bundle, cli, ids, cmsDir);
 

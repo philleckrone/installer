@@ -9,6 +9,10 @@ registrados.
 
 INSTALADOR (Install_Phils_tools.exe)
 ------------------------------------
+2.6  (18 de noviembre de 2026)
+  * Windows pide permiso de administrador como máximo una vez para todos los
+    complementos marcados, en lugar de una vez por complemento (por ejemplo
+    con Paratext 9 Beta instalado).
 2.5  (18 de noviembre de 2026)
   * Más pequeño: el instalador ya no lleva copias de las antiguas
     verificaciones CMS, que no instala desde la 1.3. "Quitar las copias CMS

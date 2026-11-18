@@ -8,6 +8,10 @@ first. Versions with no recorded changes are left out.
 
 INSTALLER (Install_Phils_tools.exe)
 -----------------------------------
+2.6  (November 18, 2026)
+  * Windows asks for administrator permission at most once for all the ticked
+    plugins, instead of once per plugin (for example with Paratext 9 Beta
+    installed).
 2.5  (November 18, 2026)
   * Smaller: the installer no longer carries copies of the old CMS checks,
     which it has not installed since 1.3. "Remove old CMS copies..." still
