@@ -1,6 +1,6 @@
 ﻿==============================================================================
  Instalar las herramientas de Paratext de Phil - Registro de cambios
- Generado el 17 de noviembre de 2026
+ Generado el 18 de noviembre de 2026
 ==============================================================================
 
 Lo que cambió en Install_Phils_tools.exe y en cada complemento que instala, de
@@ -9,6 +9,17 @@ registrados.
 
 INSTALADOR (Install_Phils_tools.exe)
 ------------------------------------
+2.5  (18 de noviembre de 2026)
+  * Más pequeño: el instalador ya no lleva copias de las antiguas
+    verificaciones CMS, que no instala desde la 1.3. "Quitar las copias CMS
+    antiguas..." las sigue encontrando y quitando.
+  * Las propiedades del archivo muestran ahora la versión real y SIL Global.
+  * Estos cambios buscan evitar que Windows Defender señale por error el
+    instalador como una amenaza, como pasó con la 2.4.
+2.4  (17 de noviembre de 2026)
+  * Lleva Verificaciones personalizadas (cms) de Phil 1.8.
+  * La descripción de Verificaciones personalizadas (cms) de Phil dice ahora
+    que las verificaciones están en inglés, español y francés.
 2.3  (17 de noviembre de 2026)
   * Lleva Verificaciones personalizadas (cms) de Phil 1.7.
   * Este registro de cambios (Install_Phils_tools_ChangeLog_sp.txt) acompaña
@@ -282,8 +293,15 @@ Títulos de libros numerados  [1.1]
     * Primera versión: encuentra los libros numerados (1 Samuel, 2 Reyes...)
       cuyos títulos siguen otro estilo, y cambia las líneas que usted marque.
 
-Verificaciones personalizadas (cms) de Phil  [1.7]
+Verificaciones personalizadas (cms) de Phil  [1.8]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.8  (17 de noviembre de 2026)
+    * Informe de Mayúscula al Inicio de Versículo tiene tres opciones nuevas:
+      se pueden omitir los nombres con mayúscula de un archivo de diccionario
+      de nombres (.dic).
+    * La ayuda de cada verificación explica ahora cómo ejecutarla con este
+      complemento (antes decía que había que copiar archivos a la carpeta
+      cms).
   1.7  (17 de noviembre de 2026)
     * "Libro actual" en la ventana de una verificación muestra ahora el libro
       abierto en Paratext (siempre mostraba Génesis).

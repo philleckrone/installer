@@ -348,8 +348,9 @@ namespace PhilsTools
                 string dest = Path.Combine(folder, name);
                 using (FileStream fs = new FileStream(dest, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                     fs.Write(data, 0, data.Length);
-                if (HasInternetMark(dest)) DeleteFile(dest + ":Zone.Identifier");
-                if (HasInternetMark(dest)) throw new InvalidOperationException("Could not remove the 'from the internet' mark from " + dest);
+                // A file created here never has the mark (only browsers and mail programs add it), so
+                // nothing is removed (since 2.5: removing it is what malware does); this only checks.
+                if (HasInternetMark(dest)) throw new InvalidOperationException("The new file has a 'from the internet' mark: " + dest);
                 log("    Installed " + dest);
             }
 
@@ -661,9 +662,6 @@ namespace PhilsTools
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         static extern uint GetFileAttributes(string path);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        static extern bool DeleteFile(string path);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr OpenProcess(uint access, bool inherit, int pid);

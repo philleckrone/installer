@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
-  <assemblyIdentity version="1.0.0.0" name="PhilsTools.Installer"/>
+  <assemblyIdentity version="2.5.0.0" name="PhilsTools.Installer"/>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
         <!-- Never elevated: Paratext 9's plugins folder is writable by every user, and nothing
-             running as administrator may write there. Each plugin's Install-Plugin.ps1 asks
-             Windows for administrator rights only for folders that need them. -->
+             running as administrator may write there. A second copy of this exe
+             (the "elevated" step) asks Windows for administrator rights only for folders that need them. -->
         <requestedExecutionLevel level="asInvoker" uiAccess="false" />
       </requestedPrivileges>
     </security>

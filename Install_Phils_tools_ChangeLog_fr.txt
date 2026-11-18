@@ -1,6 +1,6 @@
 ﻿==============================================================================
  Installer les outils Paratext de Phil - Journal des modifications
- Généré le 17 novembre 2026
+ Généré le 18 novembre 2026
 ==============================================================================
 
 Ce qui a changé dans Install_Phils_tools.exe et dans chaque module qu'il
@@ -9,6 +9,21 @@ notées sont omises.
 
 PROGRAMME D'INSTALLATION (Install_Phils_tools.exe)
 --------------------------------------------------
+2.5  (18 novembre 2026)
+  * Plus petit : le programme d'installation ne contient plus de copies des
+    anciennes vérifications CMS, qu'il n'installe plus depuis la 1.3.
+    « Supprimer les anciennes copies CMS... » les trouve et les supprime
+    toujours.
+  * Les propriétés du fichier indiquent maintenant la vraie version et SIL
+    Global.
+  * Ces changements visent à éviter que Windows Defender signale à tort le
+    programme d'installation comme une menace, comme ce fut le cas avec la
+    2.4.
+2.4  (17 novembre 2026)
+  * Fournit Vérifications personnalisées (cms) de Phil 1.8.
+  * La description de Vérifications personnalisées (cms) de Phil indique
+    désormais que les vérifications existent en anglais, en espagnol et en
+    français.
 2.3  (17 novembre 2026)
   * Fournit Vérifications personnalisées (cms) de Phil 1.7.
   * Ce journal des modifications (Install_Phils_tools_ChangeLog_fr.txt)
@@ -286,8 +301,14 @@ Titres des livres numérotés  [1.1]
       dont les titres suivent un autre style, et change les lignes que vous
       cochez.
 
-Vérifications personnalisées (cms) de Phil  [1.7]
+Vérifications personnalisées (cms) de Phil  [1.8]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.8  (17 novembre 2026)
+    * Rapport des majuscules en début de verset a trois nouvelles options :
+      les noms avec majuscule d'un fichier dictionnaire de noms (.dic) peuvent
+      être ignorés.
+    * L'aide de chaque vérification explique désormais comment la lancer avec
+      ce module (elle disait de copier des fichiers dans le dossier cms).
   1.7  (17 novembre 2026)
     * « Livre actuel » dans la fenêtre d'une vérification affiche désormais le
       livre ouvert dans Paratext (il affichait toujours la Genèse).

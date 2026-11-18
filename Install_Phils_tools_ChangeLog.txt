@@ -1,6 +1,6 @@
 ﻿==============================================================================
  Install Phil's Paratext tools - Change log
- Generated November 17, 2026
+ Generated November 18, 2026
 ==============================================================================
 
 What changed in Install_Phils_tools.exe and in each plugin it installs, newest
@@ -8,6 +8,17 @@ first. Versions with no recorded changes are left out.
 
 INSTALLER (Install_Phils_tools.exe)
 -----------------------------------
+2.5  (November 18, 2026)
+  * Smaller: the installer no longer carries copies of the old CMS checks,
+    which it has not installed since 1.3. "Remove old CMS copies..." still
+    finds and removes them.
+  * The program's file properties now show its real version and SIL Global.
+  * These changes are meant to keep Windows Defender from wrongly reporting
+    the installer as a threat, as it did with 2.4.
+2.4  (November 17, 2026)
+  * Carries Phils Custom (cms) Checks 1.8.
+  * The description of Phils Custom (cms) Checks now says the checks come in
+    English, Spanish and French.
 2.3  (November 17, 2026)
   * Carries Phils Custom (cms) Checks 1.7.
   * This change log (Install_Phils_tools_ChangeLog.txt) now comes with the
@@ -157,8 +168,13 @@ Parallel Passages Editor  [1.3]
     * First version: Tools > Parallel Passages Editor... hides books or
       chapters in Paratext's parallel passages list, with a per-project list.
 
-Phils Custom (cms) Checks  [1.7]
+Phils Custom (cms) Checks  [1.8]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  1.8  (November 17, 2026)
+    * Report of Capital at Verse has three new options: capitalized names in a
+      names dictionary (.dic) file can be ignored.
+    * The help of every check now explains how to run it with this plugin (it
+      used to say to copy files into the cms folder).
   1.7  (November 17, 2026)
     * "Current Book" in a check's window now shows the book open in Paratext
       (it always showed Genesis).
